@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:16
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: storepilot
+      POSTGRES_USER: storepilot
+      POSTGRES_PASSWORD: storepilot
+    volumes:
+      - storepilot_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  storepilot_postgres_data:

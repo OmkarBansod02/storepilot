@@ -161,7 +161,7 @@ Enums (`audit_status`, `event_type`, `variant_status`, `experiment_status`,
 ### Prerequisites
 
 - Node.js 20+
-- A Postgres database you can write to
+- Docker Desktop or Docker Engine for local Postgres
 - npm
 
 ### 1. Install
@@ -171,7 +171,16 @@ npm install
 npx playwright install chromium
 ```
 
-### 2. Configure environment
+### 2. Start local Postgres
+
+```bash
+docker compose up -d
+```
+
+This starts a local Postgres 16 database named `storepilot` on
+`localhost:5432`.
+
+### 3. Configure environment
 
 Copy `.env.example` to `.env.local` and fill in the values.
 
@@ -184,13 +193,16 @@ cp .env.example .env.local
 | `DATABASE_URL`   | yes      | Postgres connection string                         |
 | `OPENAI_API_KEY` | no       | If unset, variant generation uses the fallback     |
 
-### 3. Migrate the database
+For local development, `.env.example` points at the Docker database:
+`postgresql://storepilot:storepilot@localhost:5432/storepilot`.
+
+### 4. Push the database schema
 
 ```bash
-npm run db:migrate
+npm run db:push
 ```
 
-### 4. Seed and reset demo state
+### 5. Seed and reset demo state
 
 ```bash
 npm run db:reset-demo
@@ -199,9 +211,9 @@ npm run db:reset-demo
 This script preserves or recreates the demo `sites` and `pages` rows, restores
 the default baseline content, and clears any prior conversions, events,
 sessions, experiments, and variants for the demo page. It refuses to run when
-`NODE_ENV=production`.
+`NODE_ENV=production` or when `DATABASE_URL` points at a non-local host.
 
-### 5. Start the dev server
+### 6. Start the dev server
 
 ```bash
 npm run dev

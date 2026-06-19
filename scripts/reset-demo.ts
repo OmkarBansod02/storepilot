@@ -1,4 +1,5 @@
 import { existsSync, readFileSync } from "node:fs";
+import { inspect } from "node:util";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import postgres from "postgres";
@@ -117,9 +118,43 @@ function loadLocalEnv(): void {
   loadEnvFile(join(projectRoot, ".env"));
 }
 
-function assertSafeEnvironment(): void {
+function isLocalDatabaseHost(hostname: string): boolean {
+  return (
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname === "::1" ||
+    hostname === "0.0.0.0"
+  );
+}
+
+function assertSafeEnvironment(databaseUrl: string): void {
   if (process.env.NODE_ENV === "production") {
     throw new Error("Refusing to reset demo data when NODE_ENV=production.");
+  }
+
+  let parsedUrl: URL;
+
+  try {
+    parsedUrl = new URL(databaseUrl);
+  } catch {
+    throw new Error("DATABASE_URL must be a valid Postgres connection URL.");
+  }
+
+  if (
+    parsedUrl.protocol !== "postgres:" &&
+    parsedUrl.protocol !== "postgresql:"
+  ) {
+    throw new Error("DATABASE_URL must use postgres:// or postgresql://.");
+  }
+
+  if (!isLocalDatabaseHost(parsedUrl.hostname)) {
+    throw new Error(
+      [
+        "Refusing to reset demo data on a non-local database.",
+        `DATABASE_URL host is "${parsedUrl.hostname}".`,
+        "Use the local Docker Postgres URL from .env.example for demo resets.",
+      ].join(" "),
+    );
   }
 }
 
@@ -131,6 +166,38 @@ function getDatabaseUrl(): string {
   }
 
   return databaseUrl;
+}
+
+async function assertSchemaReady(sql: postgres.Sql): Promise<void> {
+  const requiredTables = [
+    "sites",
+    "pages",
+    "variants",
+    "experiments",
+    "sessions",
+    "events",
+    "conversions",
+  ];
+
+  const rows = await sql<{ table_name: string; exists: boolean }[]>`
+    select
+      table_name,
+      to_regclass('public.' || table_name) is not null as exists
+    from unnest(${requiredTables}::text[]) as required(table_name)
+  `;
+  const missingTables = rows
+    .filter((row) => !row.exists)
+    .map((row) => row.table_name);
+
+  if (missingTables.length > 0) {
+    throw new Error(
+      [
+        "Local database schema is not ready.",
+        `Missing tables: ${missingTables.join(", ")}.`,
+        "Run `npm run db:push` before `npm run db:reset-demo`.",
+      ].join(" "),
+    );
+  }
 }
 
 async function getDefaultDemoPageBaseline(): Promise<DemoPageBaseline> {
@@ -599,14 +666,17 @@ function printResult(
 
 async function main(): Promise<void> {
   loadLocalEnv();
-  assertSafeEnvironment();
+  const databaseUrl = getDatabaseUrl();
+  assertSafeEnvironment(databaseUrl);
 
-  const sql = postgres(getDatabaseUrl(), {
+  const sql = postgres(databaseUrl, {
     max: 1,
     prepare: false,
   });
 
   try {
+    await assertSchemaReady(sql);
+
     const baselineContent = await getDefaultDemoPageBaseline();
     const result = await sql.begin(async (tx) => {
       const demoPage = await ensureDemoPage(tx, baselineContent);
@@ -623,7 +693,24 @@ async function main(): Promise<void> {
 }
 
 main().catch((error: unknown) => {
-  const message = error instanceof Error ? error.message : "Unknown reset error.";
-  console.error(`Demo reset failed: ${message}`);
+  console.error("Demo reset failed.");
+  console.error(formatUnknownError(error));
   process.exitCode = 1;
 });
+
+function formatUnknownError(error: unknown): string {
+  if (error instanceof Error) {
+    const parts = [
+      error.stack ?? error.message,
+      `Full error: ${inspect(error, { depth: null })}`,
+    ];
+
+    if (error.cause !== undefined) {
+      parts.push(`Cause: ${inspect(error.cause, { depth: null })}`);
+    }
+
+    return parts.join("\n");
+  }
+
+  return inspect(error, { depth: null });
+}

@@ -354,22 +354,22 @@ async function resetDemoState(
 
 function buildSeededVariantContent(): Record<string, postgres.JSONValue> {
   return {
-    headline: "Pack faster for every quick escape",
+    headline: "Crafted to age beautifully — your lifetime wallet",
     subheadline:
-      "Northstar Pack keeps daily carry, weekend gear, and travel essentials organized without overpacking.",
-    primaryCtaLabel: "Add Northstar Pack",
+      "Hand-stitched from ethically sourced full-grain leather. Slim, functional, and built to develop a rich patina over time.",
+    primaryCtaLabel: "Add to Cart",
     trustProofRow: [
-      "Free 2-day shipping",
-      "30-day easy returns",
+      "Free shipping above ₹2,000",
+      "30-day hassle-free returns",
       "4.8/5 from verified buyers",
     ],
     targetArea: "hero",
     expectedImpact:
-      "Increase add-to-cart intent and purchase confidence on the product page.",
+      "Tests whether craftsmanship-focused copy improves purchase conversion on the product page.",
     sourceDiagnosis: {
       primaryBottleneck: "healthy_funnel",
       title: "Seeded ecommerce demo baseline",
-      recommendedExperimentTitle: "Test a sharper product promise",
+      recommendedExperimentTitle: "Premium leather wallet hero test",
     },
     source: "deterministic_fallback",
   };

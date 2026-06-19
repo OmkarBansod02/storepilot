@@ -50,14 +50,14 @@ function formatDate(value: Date | null): string {
 }
 
 function formatCurrency(cents: number): string {
-  return `$${(cents / 100).toFixed(2)}`;
+  return `₹${(cents / 100).toFixed(2)}`;
 }
 
 function formatExperimentName(targetArea: string): string {
   const names: Record<string, string> = {
-    hero: "Hero copy test",
+    hero: "Premium leather wallet hero test",
     primary_cta: "Add-to-cart CTA test",
-    trust_proof: "Trust proof test",
+    trust_proof: "Trust proof placement test",
     signup_form: "Offer form test",
   };
   return (
@@ -105,7 +105,7 @@ function getWinnerCopy(
   }
   if (winner === "variant") {
     return {
-      label: "Variant leading",
+      label: "Craftsmanship variant leading",
       caption:
         "The variant is outperforming the baseline on purchase conversion.",
     };

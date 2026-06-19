@@ -35,10 +35,16 @@ interface LabExperiment {
 
 const LAB_EXPERIMENTS: LabExperiment[] = [
   {
+    title: "Wallet hero copy test",
+    targetArea: "Hero positioning",
+    description:
+      "Test craftsmanship-focused hero copy against the current product headline.",
+  },
+  {
     title: "Free shipping offer test",
     targetArea: "Offer banner",
     description:
-      "Test whether a free-shipping threshold increases AOV and purchase rate.",
+      "Test whether a free-shipping threshold above ₹2,000 increases AOV and purchase rate.",
   },
   {
     title: "Add-to-cart CTA test",

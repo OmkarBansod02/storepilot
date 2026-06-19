@@ -1,45 +1,56 @@
 export const demoContent = {
-  brand: "Northstar Pack",
-  tagline: "Carry less. Convert more trail miles.",
-  headline: "The daypack built for\nfast-moving city escapes",
+  brand: "Atelier Craft",
+  tagline: "Handcrafted leather goods",
+  headline: "Premium Full-Grain\nLeather Wallet",
   subheadline:
-    "Northstar Pack keeps essentials organized, water protected, and easy to reach so weekend travelers can move from commute to trail without repacking.",
-  ctaLabel: "Add to cart",
-  secondaryCta: "View details",
+    "Handmade in small batches from ethically sourced full-grain leather. Designed to age beautifully and last a lifetime.",
+  ctaLabel: "Add to Cart",
+  secondaryCta: "View Details",
+  price: "₹2,499",
+  priceCents: 249900,
+  currency: "INR",
+  productId: "premium-leather-wallet",
+  rating: 4.8,
+  reviewCount: 200,
   features: [
     {
-      title: "Organized in seconds",
+      title: "Full-grain leather",
       description:
-        "Dedicated pockets keep keys, layers, tech, and snacks easy to find without unpacking the whole bag.",
+        "Premium cowhide that develops a rich patina over time, getting more beautiful with every use.",
     },
     {
-      title: "Weather-ready shell",
+      title: "Handmade craftsmanship",
       description:
-        "A recycled ripstop exterior and sealed zipper help protect the gear you actually care about.",
+        "Each wallet is hand-cut, hand-stitched, and inspected by artisans in small batches of 50.",
     },
     {
-      title: "Made for daily carry",
+      title: "Slim & functional",
       description:
-        "A compact frame, padded straps, and pass-through sleeve keep it comfortable from train ride to trailhead.",
+        "6 card slots, 2 note compartments, and a coin pocket — all in a slim profile that fits any pocket.",
     },
   ],
   socialProof: {
-    metric: "18,000+",
-    metricLabel: "packs shipped",
+    metric: "4.8/5",
+    metricLabel: "average rating from 200+ verified buyers",
     quotes: [
       {
-        text: "It fits my camera, jacket, and laptop without feeling bulky.",
-        author: "Maya R.",
+        text: "The leather quality is incredible. Three months in and it's developing a gorgeous patina.",
+        author: "Rohan K.",
         role: "Verified buyer",
       },
       {
-        text: "The first small pack that survived a wet commute and a rocky hike.",
-        author: "Jon T.",
+        text: "Finally a wallet that's slim enough for my front pocket but holds everything I need.",
+        author: "Priya M.",
         role: "Verified buyer",
       },
     ],
   },
-  formHeadline: "Save 15% on your first order",
+  formHeadline: "Complete your order",
   formDescription:
-    "Join the list for launch drops, restock alerts, and a first-order discount.",
+    "Free shipping on orders above ₹2,000. 30-day hassle-free returns.",
+  trustBadges: [
+    "Free shipping above ₹2,000",
+    "30-day returns",
+    "Secure checkout",
+  ],
 } as const;

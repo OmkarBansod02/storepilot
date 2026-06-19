@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Northstar Pack - Carry less. Move faster.",
+  title: "Atelier Craft - Premium Full-Grain Leather Wallet",
   description:
-    "A compact, weather-ready daypack for commutes, weekend trips, and fast-moving city escapes.",
+    "Handmade in small batches from ethically sourced full-grain leather. Designed to age beautifully and last a lifetime.",
 };
 
 export default function DemoLayout({

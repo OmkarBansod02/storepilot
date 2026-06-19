@@ -7,6 +7,7 @@ import { getDemoPageBaseline } from "@/features/demo/server/get-demo-page-baseli
 import { getDemoExperimentRuntime } from "@/features/demo/server/get-demo-experiment-runtime";
 import { DemoPageClient } from "@/features/demo/components/demo-page-client";
 import type { ExperimentArm } from "@/features/experiments/types";
+import { ShoppingBag } from "lucide-react";
 
 interface DemoPageProps {
   searchParams?: Promise<{
@@ -55,8 +56,11 @@ export default async function DemoPage({ searchParams }: DemoPageProps) {
             {baseline.brand}
           </span>
           <nav className="flex items-center gap-4">
-            <Button asChild>
-              <a href="#signup">{baseline.primaryCtaLabel}</a>
+            <Button asChild variant="outline" size="sm">
+              <a href="#checkout">
+                <ShoppingBag className="size-4" />
+                Cart
+              </a>
             </Button>
           </nav>
         </div>

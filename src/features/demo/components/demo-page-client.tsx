@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type {
   DemoExperimentRuntime,
   DemoPageBaseline,
@@ -15,13 +15,16 @@ import {
   replaceAnonymousId,
 } from "@/features/snippet/client/anonymous-id";
 import { TrackerProvider } from "@/features/snippet/client/tracker-provider";
-import { usePageView } from "@/features/snippet/client/use-page-view";
+import { useTracker } from "@/features/snippet/client/tracker-provider";
 import { useScrollDepth } from "@/features/snippet/client/use-scroll-depth";
+import { demoContent } from "@/features/demo/lib/demo-content";
 import { DevArmBadge } from "./dev-arm-badge";
 import { DemoFeatures } from "./demo-features";
 import { DemoHero, type DemoHeroContent } from "./demo-hero";
-import { DemoSignupForm } from "./demo-signup-form";
+import { DemoCheckout } from "./demo-checkout";
 import { DemoSocialProof } from "./demo-social-proof";
+
+type CheckoutStep = "idle" | "cart" | "checkout" | "complete";
 
 function getAssignmentCookieName(experimentId: string): string {
   return `storepilot_exp_${experimentId}`;
@@ -105,20 +108,37 @@ function buildHeroContent(
   };
 }
 
+function useProductView() {
+  const { track, ready } = useTracker();
+  const fired = useRef(false);
+
+  useEffect(() => {
+    if (!ready || fired.current) return;
+    fired.current = true;
+    track("product_view", { product_id: demoContent.productId });
+  }, [ready, track]);
+}
+
 function TrackedContent({
   heroContent,
 }: {
   heroContent: DemoHeroContent;
 }) {
-  usePageView();
+  useProductView();
   useScrollDepth();
+
+  const [checkoutStep, setCheckoutStep] = useState<CheckoutStep>("idle");
+
+  const handleAddToCart = useCallback(() => {
+    setCheckoutStep((prev) => (prev === "idle" ? "cart" : prev));
+  }, []);
 
   return (
     <>
-      <DemoHero content={heroContent} />
+      <DemoHero content={heroContent} onAddToCart={handleAddToCart} />
       <DemoFeatures />
       <DemoSocialProof />
-      <DemoSignupForm ctaLabel={heroContent.primaryCtaLabel} />
+      <DemoCheckout step={checkoutStep} onStepChange={setCheckoutStep} />
     </>
   );
 }

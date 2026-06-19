@@ -8,11 +8,7 @@ export function getDefaultDemoPageBaseline(): DemoPageBaseline {
     subheadline: demoContent.subheadline,
     primaryCtaLabel: demoContent.ctaLabel,
     secondaryCtaLabel: demoContent.secondaryCta,
-    trustProofRow: [
-      `${demoContent.socialProof.metric} ${demoContent.socialProof.metricLabel}`,
-      demoContent.socialProof.quotes[0].text,
-      demoContent.socialProof.quotes[1].text,
-    ],
+    trustProofRow: [...demoContent.trustBadges],
     formHeadline: demoContent.formHeadline,
     formDescription: demoContent.formDescription,
   };

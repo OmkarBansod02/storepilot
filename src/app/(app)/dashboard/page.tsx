@@ -2,10 +2,11 @@ export const dynamic = "force-dynamic";
 
 import {
   Activity,
+  DollarSign,
   Eye,
-  MousePointerClick,
-  FormInput,
-  Send,
+  Package,
+  ShoppingCart,
+  TrendingUp,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { PageContainer } from "@/components/layout/page-container";
@@ -13,6 +14,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { SectionLabel } from "@/components/layout/section-label";
 import { MetricCard } from "@/features/analytics/components/metric-card";
 import { ConversionFunnel } from "@/features/analytics/components/conversion-funnel";
+import { VariantFunnelTable } from "@/features/analytics/components/variant-funnel-table";
 import { DashboardEmpty } from "@/features/analytics/components/dashboard-empty";
 import { DiagnosisSection } from "@/features/analytics/components/diagnosis-section";
 import { getDashboardMetrics } from "@/features/analytics/server/get-dashboard-metrics";
@@ -30,11 +32,13 @@ function formatPercent(value: number): string {
   return `${(boundedValue * 100).toFixed(1)}%`;
 }
 
-function formatDepth(value: number): string {
-  if (value === 0) return "0%";
-  return `${Math.round(value)}%`;
+function formatCurrency(cents: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 2,
+  }).format(cents / 100);
 }
-
 
 interface SecondaryStatCardProps {
   title: string;
@@ -73,11 +77,15 @@ export default async function DashboardPage() {
     ? serializeVariantProposal(existingVariant)
     : null;
 
+  const hasVariantFunnel = metrics.perVariantFunnel.some(
+    (v) => v.arm !== "unassigned" && v.sessions > 0,
+  );
+
   return (
     <PageContainer>
       <PageHeader
         title="Dashboard"
-        description="Monitor visitor behavior, diagnose friction, and ship the next experiment."
+        description="Monitor storefront performance, diagnose friction, and optimize for revenue."
       />
 
       {!hasData ? (
@@ -86,38 +94,60 @@ export default async function DashboardPage() {
         </div>
       ) : (
         <div className="mt-8 space-y-10">
+          {/* ── Storefront performance ── */}
           <section className="space-y-3">
-            <SectionLabel>Performance</SectionLabel>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            <SectionLabel>Storefront performance</SectionLabel>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <MetricCard
                 title="Sessions"
                 value={metrics.totalSessions.toLocaleString()}
-                description="Total tracked sessions"
+                description="Unique visitor sessions tracked"
                 icon={Activity}
               />
               <MetricCard
-                title="Page Views"
-                value={metrics.totalPageViews.toLocaleString()}
-                description="Total page view events"
+                title="Product Views"
+                value={metrics.productViews.toLocaleString()}
+                description="Product detail page views"
                 icon={Eye}
               />
               <MetricCard
-                title="CTA Clicks"
-                value={metrics.ctaClicks.toLocaleString()}
-                description={`${formatPercent(metrics.ctaClickThroughRate)} of sessions clicked`}
-                icon={MousePointerClick}
+                title="Add-to-Cart Rate"
+                value={formatPercent(metrics.addToCartRate)}
+                description={`${metrics.addToCarts.toLocaleString()} add-to-cart events`}
+                icon={ShoppingCart}
               />
               <MetricCard
-                title="Form Starts"
-                value={metrics.formStarts.toLocaleString()}
-                description={`${formatPercent(metrics.formStartRate)} of sessions started`}
-                icon={FormInput}
+                title="Purchase Conversion"
+                value={formatPercent(metrics.purchaseConversionRate)}
+                description={`${metrics.purchases.toLocaleString()} purchases from ${metrics.totalSessions.toLocaleString()} sessions`}
+                icon={Package}
+                emphasis="primary"
+              />
+            </div>
+          </section>
+
+          {/* ── Revenue metrics ── */}
+          <section className="space-y-3">
+            <SectionLabel>Revenue</SectionLabel>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <MetricCard
+                title="Total Revenue"
+                value={formatCurrency(metrics.totalRevenueCents)}
+                description="Sum of all tracked purchase revenue"
+                icon={DollarSign}
+                emphasis="primary"
               />
               <MetricCard
-                title="Form Submits"
-                value={metrics.formSubmits.toLocaleString()}
-                description={`${formatPercent(metrics.formSubmitRate)} of sessions submitted`}
-                icon={Send}
+                title="Average Order Value"
+                value={formatCurrency(metrics.averageOrderValueCents)}
+                description="Revenue per purchase"
+                icon={DollarSign}
+              />
+              <MetricCard
+                title="Revenue per Visitor"
+                value={formatCurrency(metrics.revenuePerVisitorCents)}
+                description="Total revenue divided by sessions"
+                icon={TrendingUp}
               />
             </div>
           </section>
@@ -142,29 +172,48 @@ export default async function DashboardPage() {
             </section>
           )}
 
+          {/* ── Storefront funnel ── */}
           <section className="space-y-3">
-            <SectionLabel>Funnel breakdown</SectionLabel>
+            <SectionLabel>Storefront funnel</SectionLabel>
             <div className="grid gap-4 lg:grid-cols-2">
               <ConversionFunnel metrics={metrics} />
               <div className="grid gap-3">
                 <SecondaryStatCard
-                  title="CTA Click-Through"
-                  value={formatPercent(metrics.ctaClickThroughRate)}
-                  description="Sessions with a CTA click / total sessions"
+                  title="Checkout-Start Rate"
+                  value={formatPercent(metrics.checkoutStartRate)}
+                  description="Sessions that started checkout / total sessions"
+                />
+                <SecondaryStatCard
+                  title="Cart-to-Purchase Rate"
+                  value={
+                    metrics.addToCarts > 0
+                      ? formatPercent(metrics.purchases / metrics.addToCarts)
+                      : "0%"
+                  }
+                  description="Purchases / add-to-cart events"
                 />
                 <SecondaryStatCard
                   title="Average Max Scroll"
-                  value={formatDepth(metrics.scrollDepth.averageMaxScrollDepth)}
+                  value={
+                    metrics.scrollDepth.averageMaxScrollDepth === 0
+                      ? "0%"
+                      : `${Math.round(metrics.scrollDepth.averageMaxScrollDepth)}%`
+                  }
                   description="Deepest scroll milestone averaged across sessions"
-                />
-                <SecondaryStatCard
-                  title="Form Submit Rate"
-                  value={formatPercent(metrics.formSubmitRate)}
-                  description="Sessions with a form submit / total sessions"
                 />
               </div>
             </div>
           </section>
+
+          {/* ── Variant comparison ── */}
+          {hasVariantFunnel && (
+            <section className="space-y-3">
+              <SectionLabel>Variant comparison</SectionLabel>
+              <VariantFunnelTable
+                perVariantFunnel={metrics.perVariantFunnel}
+              />
+            </section>
+          )}
         </div>
       )}
     </PageContainer>

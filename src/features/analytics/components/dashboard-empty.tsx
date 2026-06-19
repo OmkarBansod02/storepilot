@@ -22,7 +22,7 @@ export function DashboardEmpty() {
         </p>
         <p className="flex items-center justify-center gap-2">
           <span className="flex size-5 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground">2</span>
-          Trigger a CTA click or a form start
+          Browse the product page and add an item to cart
         </p>
         <p className="flex items-center justify-center gap-2">
           <span className="flex size-5 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground">3</span>

@@ -6,6 +6,7 @@ import { getDefaultDemoPageBaseline } from "@/features/demo/lib/default-demo-pag
 const DEMO_SITE_NAME = "StorePilot Demo";
 const DEMO_SITE_URL = "http://localhost:3000/demo";
 const DEMO_PAGE_TITLE = "Northstar Pack - Demo Product Page";
+const DEMO_PRIMARY_CONVERSION_EVENT = "purchase";
 
 export async function ensureDemoPage(): Promise<{ pageId: string; siteId: string }> {
   const baselineContent = getDefaultDemoPageBaseline();
@@ -34,12 +35,16 @@ export async function ensureDemoPage(): Promise<{ pageId: string; siteId: string
     .limit(1);
 
   if (existingPage.length > 0) {
-    if (!existingPage[0].baselineContent) {
-      await db
-        .update(pages)
-        .set({ baselineContent, updatedAt: new Date() })
-        .where(eq(pages.id, existingPage[0].id));
-    }
+    await db
+      .update(pages)
+      .set({
+        baselineContent: existingPage[0].baselineContent
+          ? existingPage[0].baselineContent
+          : baselineContent,
+        primaryConversionEvent: DEMO_PRIMARY_CONVERSION_EVENT,
+        updatedAt: new Date(),
+      })
+      .where(eq(pages.id, existingPage[0].id));
 
     return { pageId: existingPage[0].id, siteId };
   }
@@ -50,7 +55,7 @@ export async function ensureDemoPage(): Promise<{ pageId: string; siteId: string
       siteId,
       url: DEMO_SITE_URL,
       title: DEMO_PAGE_TITLE,
-      primaryConversionEvent: "form_submit",
+      primaryConversionEvent: DEMO_PRIMARY_CONVERSION_EVENT,
       baselineContent,
     })
     .returning({ id: pages.id });

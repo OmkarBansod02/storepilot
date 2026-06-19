@@ -7,11 +7,11 @@ import type {
 } from "@/features/analytics/types";
 
 const MIN_SESSIONS_FOR_DIAGNOSIS = 5;
-const MIN_PAGE_VIEWS_FOR_DIAGNOSIS = 10;
-const LOW_CTA_CLICK_RATE = 0.08;
-const HEALTHY_FORM_START_RATE = 0.12;
-const LOW_FORM_SUBMIT_RATE = 0.05;
-const WEAK_FORM_SUBMIT_RATE = 0.08;
+const MIN_PRODUCT_VIEWS_FOR_DIAGNOSIS = 10;
+const LOW_ADD_TO_CART_RATE = 0.08;
+const HEALTHY_CHECKOUT_START_RATE = 0.12;
+const LOW_PURCHASE_RATE = 0.05;
+const WEAK_PURCHASE_RATE = 0.08;
 const LOW_SCROLL_DEPTH = 50;
 const GOOD_SCROLL_DEPTH = 50;
 
@@ -24,6 +24,14 @@ function formatPercent(rate: number): string {
 function formatDepth(depth: number): string {
   if (depth === 0) return "0%";
   return `${Math.round(depth)}%`;
+}
+
+function formatCurrencyCents(cents: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 2,
+  }).format(cents / 100);
 }
 
 function confidenceForSampleSize(totalSessions: number): DiagnosisConfidence {
@@ -40,21 +48,21 @@ function buildCoreSignals(metrics: DiagnosisMetricInput): DiagnosisSignal[] {
       description: "Anonymous sessions tracked for this storefront page.",
     },
     {
-      label: "CTA click-through",
-      value: formatPercent(metrics.ctaClickThroughRate),
+      label: "Add-to-cart rate",
+      value: formatPercent(metrics.addToCartRate),
       description:
-        "Sessions with at least one CTA click divided by total sessions.",
+        "Sessions with at least one add-to-cart event divided by total sessions.",
     },
     {
-      label: "Form submit rate",
-      value: formatPercent(metrics.formSubmitRate),
+      label: "Purchase conversion",
+      value: formatPercent(metrics.purchaseConversionRate),
       description:
-        "Sessions with at least one form submit divided by total sessions.",
+        "Sessions with at least one purchase divided by total sessions.",
     },
     {
-      label: "Avg. max scroll depth",
-      value: formatDepth(metrics.scrollDepth.averageMaxScrollDepth),
-      description: "Average of each session's deepest reached scroll milestone.",
+      label: "Revenue per visitor",
+      value: formatCurrencyCents(metrics.revenuePerVisitorCents),
+      description: "Total purchase revenue divided by tracked sessions.",
     },
   ];
 }
@@ -93,7 +101,7 @@ export function diagnoseDashboardMetrics(
 
   if (
     metrics.totalSessions < MIN_SESSIONS_FOR_DIAGNOSIS ||
-    metrics.totalPageViews < MIN_PAGE_VIEWS_FOR_DIAGNOSIS
+    metrics.productViews < MIN_PRODUCT_VIEWS_FOR_DIAGNOSIS
   ) {
     return createDiagnosis({
       metrics,
@@ -102,12 +110,12 @@ export function diagnoseDashboardMetrics(
       primaryBottleneck: "insufficient_data",
       title: "Not enough behavior data yet",
       summary:
-        "StorePilot needs a small baseline before calling a bottleneck. Keep collecting sessions until the dashboard has at least 5 sessions and 10 page views.",
+        "StorePilot needs a small storefront baseline before calling a bottleneck. Keep collecting sessions until the dashboard has at least 5 sessions and 10 product views.",
       confidence: "low",
       recommendedExperiment: {
         title: "Collect a clean baseline",
         description:
-          "Drive a small amount of traffic through the tracked page before changing copy, CTA placement, or form structure.",
+          "Drive a small amount of traffic through the tracked product page before changing copy, CTA placement, or checkout messaging.",
         targetArea: "Tracking baseline",
         expectedImpact:
           "More reliable diagnosis before choosing the first experiment.",
@@ -115,7 +123,7 @@ export function diagnoseDashboardMetrics(
       extraSignals: [
         {
           label: "Minimum needed",
-          value: `${MIN_SESSIONS_FOR_DIAGNOSIS} sessions / ${MIN_PAGE_VIEWS_FOR_DIAGNOSIS} page views`,
+          value: `${MIN_SESSIONS_FOR_DIAGNOSIS} sessions / ${MIN_PRODUCT_VIEWS_FOR_DIAGNOSIS} product views`,
           description:
             "The deterministic diagnosis stays conservative until this floor is reached.",
         },
@@ -124,38 +132,38 @@ export function diagnoseDashboardMetrics(
   }
 
   if (
-    metrics.formStartRate >= HEALTHY_FORM_START_RATE &&
-    metrics.formSubmitRate < LOW_FORM_SUBMIT_RATE
+    metrics.checkoutStartRate >= HEALTHY_CHECKOUT_START_RATE &&
+    metrics.purchaseConversionRate < LOW_PURCHASE_RATE
   ) {
     return createDiagnosis({
       metrics,
       createdAt,
       status: "ready",
       primaryBottleneck: "form_friction",
-      title: "Form friction is likely blocking conversion",
+      title: "Checkout friction is likely blocking purchases",
       summary:
-        "Visitors are willing to start the form, but too few complete it. The issue is probably in form length, perceived effort, unclear fields, or trust near the submit step.",
+        "Shoppers are willing to start checkout, but too few complete the purchase. The issue is probably trust, shipping or return uncertainty, perceived effort, or final-step hesitation.",
       confidence,
       recommendedExperiment: {
-        title: "Reduce form effort",
+        title: "Reduce checkout hesitation",
         description:
-          "Test a shorter form, clearer field labels, and reassurance near the submit button.",
-        targetArea: "Offer form",
+          "Test clearer checkout reassurance, return proof, and lower-risk purchase language near the primary CTA.",
+        targetArea: "Checkout path",
         expectedImpact:
-          "Improve completion from visitors who already show intent.",
+          "Improve purchase completion from shoppers who already show intent.",
       },
       extraSignals: [
         {
-          label: "Form start threshold",
-          value: formatPercent(HEALTHY_FORM_START_RATE),
+          label: "Checkout start threshold",
+          value: formatPercent(HEALTHY_CHECKOUT_START_RATE),
           description:
-            "The page is clearing the minimum intent threshold before the form.",
+            "The page is clearing the minimum intent threshold before the purchase step.",
         },
         {
-          label: "Low submit threshold",
-          value: formatPercent(LOW_FORM_SUBMIT_RATE),
+          label: "Low purchase threshold",
+          value: formatPercent(LOW_PURCHASE_RATE),
           description:
-            "Submit rate below this level suggests downstream friction.",
+            "Purchase conversion below this level suggests downstream friction.",
         },
       ],
     });
@@ -163,7 +171,7 @@ export function diagnoseDashboardMetrics(
 
   if (
     metrics.scrollDepth.averageMaxScrollDepth < LOW_SCROLL_DEPTH &&
-    metrics.ctaClickThroughRate < LOW_CTA_CLICK_RATE
+    metrics.addToCartRate < LOW_ADD_TO_CART_RATE
   ) {
     return createDiagnosis({
       metrics,
@@ -172,15 +180,15 @@ export function diagnoseDashboardMetrics(
       primaryBottleneck: "weak_above_the_fold_interest",
       title: "Above-the-fold interest looks weak",
       summary:
-        "Visitors are not scrolling deeply and are not clicking the primary CTA. The hero section may not be creating enough immediate relevance or urgency.",
+        "Shoppers are not scrolling deeply and are not adding the product to cart. The hero section may not be creating enough immediate relevance, confidence, or urgency.",
       confidence,
       recommendedExperiment: {
-        title: "Sharpen the hero promise",
+        title: "Sharpen the product promise",
         description:
-          "Test a more specific headline, clearer outcome, stronger proof, and a more direct primary CTA near the top of the page.",
+          "Test a more specific product promise, clearer outcome, stronger proof, and a more direct add-to-cart CTA near the top of the page.",
         targetArea: "Hero section",
         expectedImpact:
-          "Increase early engagement before visitors decide whether to keep reading.",
+          "Increase early shopping intent before visitors decide whether to keep reading.",
       },
       extraSignals: [
         {
@@ -190,39 +198,39 @@ export function diagnoseDashboardMetrics(
             "Average max scroll depth below this level points to weak early interest.",
         },
         {
-          label: "Low CTA threshold",
-          value: formatPercent(LOW_CTA_CLICK_RATE),
+          label: "Low add-to-cart threshold",
+          value: formatPercent(LOW_ADD_TO_CART_RATE),
           description:
-            "CTA click-through below this level means few visitors are acting on the page promise.",
+            "Add-to-cart below this level means few shoppers are acting on the product promise.",
         },
       ],
     });
   }
 
-  if (metrics.ctaClickThroughRate < LOW_CTA_CLICK_RATE) {
+  if (metrics.addToCartRate < LOW_ADD_TO_CART_RATE) {
     return createDiagnosis({
       metrics,
       createdAt,
       status: "ready",
       primaryBottleneck: "low_cta_engagement",
-      title: "CTA engagement is low",
+      title: "Add-to-cart engagement is low",
       summary:
-        "Visitors are reaching the page, but the primary call to action is not earning enough clicks. The offer, button copy, or CTA visibility may need tightening.",
+        "Shoppers are reaching the page, but the product is not earning enough cart intent. The offer, button copy, price confidence, or CTA visibility may need tightening.",
       confidence,
       recommendedExperiment: {
-        title: "Test a clearer primary CTA",
+        title: "Test a clearer add-to-cart path",
         description:
-          "Try more outcome-oriented button copy and make the primary CTA easier to find in the hero section.",
+          "Try more outcome-oriented button copy and make the product CTA easier to find in the hero section.",
         targetArea: "Primary CTA",
         expectedImpact:
-          "Increase the share of sessions that move from attention to action.",
+          "Increase the share of sessions that move from product interest to cart intent.",
       },
       extraSignals: [
         {
-          label: "Low CTA threshold",
-          value: formatPercent(LOW_CTA_CLICK_RATE),
+          label: "Low add-to-cart threshold",
+          value: formatPercent(LOW_ADD_TO_CART_RATE),
           description:
-            "CTA click-through below this level is treated as the first funnel bottleneck.",
+            "Add-to-cart below this level is treated as the first ecommerce funnel bottleneck.",
         },
       ],
     });
@@ -230,24 +238,24 @@ export function diagnoseDashboardMetrics(
 
   if (
     metrics.scrollDepth.averageMaxScrollDepth >= GOOD_SCROLL_DEPTH &&
-    metrics.formSubmitRate < WEAK_FORM_SUBMIT_RATE
+    metrics.purchaseConversionRate < WEAK_PURCHASE_RATE
   ) {
     return createDiagnosis({
       metrics,
       createdAt,
       status: "ready",
       primaryBottleneck: "good_interest_weak_conversion",
-      title: "Interest is present, but conversion is weak",
+      title: "Interest is present, but purchase conversion is weak",
       summary:
-        "Visitors are engaging with the page, but that interest is not turning into enough completed forms. The next test should connect the page promise more directly to the conversion step.",
+        "Shoppers are engaging with the product page, but that interest is not turning into enough purchases. The next test should connect the product promise more directly to the buy step.",
       confidence,
       recommendedExperiment: {
-        title: "Align proof and CTA with the conversion step",
+        title: "Align proof and CTA with purchase intent",
         description:
-          "Test stronger proof, clearer next-step expectations, and CTA copy that reduces uncertainty before the form.",
+          "Test stronger buyer proof, clearer checkout expectations, and CTA copy that reduces uncertainty before purchase.",
         targetArea: "Mid-page proof and CTA path",
         expectedImpact:
-          "Convert engaged readers who need more confidence before submitting.",
+          "Convert engaged shoppers who need more confidence before buying.",
       },
       extraSignals: [
         {
@@ -257,10 +265,10 @@ export function diagnoseDashboardMetrics(
             "Average max scroll depth at or above this level suggests visitors are reading beyond the hero.",
         },
         {
-          label: "Weak conversion threshold",
-          value: formatPercent(WEAK_FORM_SUBMIT_RATE),
+          label: "Weak purchase threshold",
+          value: formatPercent(WEAK_PURCHASE_RATE),
           description:
-            "Submit rate below this level leaves room for a focused conversion test.",
+            "Purchase conversion below this level leaves room for a focused conversion test.",
         },
       ],
     });
@@ -273,7 +281,7 @@ export function diagnoseDashboardMetrics(
     primaryBottleneck: "healthy_funnel",
     title: "No obvious bottleneck detected",
     summary:
-      "The tracked funnel is clearing the basic engagement thresholds. The next experiment should be a focused lift test rather than a broad repair.",
+      "The tracked ecommerce funnel is clearing the basic engagement thresholds. The next experiment should be a focused lift test rather than a broad repair.",
     confidence,
     recommendedExperiment: {
       title: "Test a sharper value proposition",

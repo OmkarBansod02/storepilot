@@ -6,15 +6,27 @@ export const snippetEventTypeSchema = z.enum([
   "cta_click",
   "form_start",
   "form_submit",
+  "product_view",
+  "add_to_cart",
+  "checkout_start",
+  "purchase",
 ]);
 
 const trackingTextSchema = z.string().trim().min(1).max(128);
 const pageTextSchema = z.string().trim().min(1).max(512);
+const currencySchema = z
+  .string()
+  .trim()
+  .length(3)
+  .transform((value) => value.toUpperCase());
+const centsSchema = z.number().int().min(0).max(100_000_000);
+const revenueSchema = z.number().min(0).max(1_000_000);
 
 const baseEventInputSchema = z.object({
   pageId: z.string().uuid(),
   sessionId: z.string().uuid(),
   experimentId: z.string().uuid().optional(),
+  variantId: z.string().uuid().optional(),
   variantArm: z.enum(["control", "variant"]).optional(),
   occurredAt: z.string().datetime().optional(),
 });
@@ -78,6 +90,41 @@ export const formSubmitPayloadSchema = z
   })
   .strict();
 
+export const productViewPayloadSchema = z
+  .object({
+    product_id: trackingTextSchema.optional(),
+    variant_id: z.string().uuid().optional(),
+  })
+  .strict();
+
+export const addToCartPayloadSchema = z
+  .object({
+    product_id: trackingTextSchema.optional(),
+    cart_value_cents: centsSchema.optional(),
+    currency: currencySchema.default("USD"),
+    variant_id: z.string().uuid().optional(),
+  })
+  .strict();
+
+export const checkoutStartPayloadSchema = z
+  .object({
+    product_id: trackingTextSchema.optional(),
+    cart_value_cents: centsSchema.optional(),
+    currency: currencySchema.default("USD"),
+    variant_id: z.string().uuid().optional(),
+  })
+  .strict();
+
+export const purchasePayloadSchema = z
+  .object({
+    product_id: trackingTextSchema.optional(),
+    revenue_cents: centsSchema.optional(),
+    revenue: revenueSchema.optional(),
+    currency: currencySchema.default("USD"),
+    variant_id: z.string().uuid().optional(),
+  })
+  .strict();
+
 export const recordEventInputSchema = z
   .discriminatedUnion("eventType", [
     baseEventInputSchema
@@ -110,8 +157,46 @@ export const recordEventInputSchema = z
         payload: formSubmitPayloadSchema.default({}),
       })
       .strict(),
+    baseEventInputSchema
+      .extend({
+        eventType: z.literal("product_view"),
+        payload: productViewPayloadSchema.default({}),
+      })
+      .strict(),
+    baseEventInputSchema
+      .extend({
+        eventType: z.literal("add_to_cart"),
+        payload: addToCartPayloadSchema.default({ currency: "USD" }),
+      })
+      .strict(),
+    baseEventInputSchema
+      .extend({
+        eventType: z.literal("checkout_start"),
+        payload: checkoutStartPayloadSchema.default({ currency: "USD" }),
+      })
+      .strict(),
+    baseEventInputSchema
+      .extend({
+        eventType: z.literal("purchase"),
+        payload: purchasePayloadSchema,
+      })
+      .strict(),
   ])
-  .superRefine(validateExperimentContext);
+  .superRefine((input, ctx) => {
+    validateExperimentContext(input, ctx);
+
+    if (
+      input.eventType === "purchase" &&
+      input.payload.revenue_cents === undefined &&
+      input.payload.revenue === undefined
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["payload", "revenue_cents"],
+        message: "purchase events require revenue_cents or revenue.",
+      });
+    }
+  });
 
 export type SnippetEventType = z.infer<typeof snippetEventTypeSchema>;
 export type RecordEventInput = z.infer<typeof recordEventInputSchema>;

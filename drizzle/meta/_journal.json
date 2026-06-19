@@ -22,6 +22,13 @@
       "when": 1776365356309,
       "tag": "0002_lethal_titania",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1781893740604,
+      "tag": "0003_loud_sandman",
+      "breakpoints": true
     }
   ]
 }

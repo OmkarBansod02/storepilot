@@ -29,6 +29,7 @@ export async function recordSnippetEvent(
       id: sessions.id,
       experimentId: sessions.experimentId,
       experimentArm: sessions.experimentArm,
+      experimentVariantId: experiments.variantId,
       experimentStatus: experiments.status,
       primaryConversionEvent: experiments.primaryConversionEvent,
     })
@@ -50,17 +51,31 @@ export async function recordSnippetEvent(
 
   const eventContext =
     session.experimentId && session.experimentArm
-      ? {
+      ? ({
           experimentId: session.experimentId,
           variantArm: session.experimentArm,
-        }
+          ...(session.experimentArm === "variant" && session.experimentVariantId
+            ? { variant_id: session.experimentVariantId }
+            : {}),
+        } satisfies JsonObject)
       : input.experimentId && input.variantArm
-        ? {
+        ? ({
             experimentId: input.experimentId,
             variantArm: input.variantArm,
-          }
+            ...(input.variantArm === "variant" && input.variantId
+              ? { variant_id: input.variantId }
+              : {}),
+          } satisfies JsonObject)
         : {};
   const occurredAt = input.occurredAt ? new Date(input.occurredAt) : new Date();
+  const revenueCents = readRevenueCents(input);
+  const cartValueCents = readCartValueCents(input);
+  const variantId =
+    session.experimentArm === "variant"
+      ? session.experimentVariantId
+      : session.experimentArm === "control"
+        ? null
+        : readPayloadVariantId(input) ?? input.variantId ?? null;
 
   const [inserted] = await db
     .insert(events)
@@ -68,6 +83,11 @@ export async function recordSnippetEvent(
       sessionId: input.sessionId,
       pageId: input.pageId,
       eventType: input.eventType,
+      productId: readProductId(input),
+      variantId,
+      revenueCents,
+      cartValueCents,
+      currency: readCurrency(input),
       payload: { ...input.payload, ...eventContext } satisfies JsonObject,
       occurredAt,
     })
@@ -94,4 +114,63 @@ export async function recordSnippetEvent(
     eventId: inserted.id,
     eventType: input.eventType,
   };
+}
+
+function readProductId(input: RecordEventInput): string | null {
+  switch (input.eventType) {
+    case "product_view":
+    case "add_to_cart":
+    case "checkout_start":
+    case "purchase":
+      return input.payload.product_id ?? null;
+    default:
+      return null;
+  }
+}
+
+function readPayloadVariantId(input: RecordEventInput): string | null {
+  switch (input.eventType) {
+    case "product_view":
+    case "add_to_cart":
+    case "checkout_start":
+    case "purchase":
+      return input.payload.variant_id ?? null;
+    default:
+      return null;
+  }
+}
+
+function readCartValueCents(input: RecordEventInput): number | null {
+  switch (input.eventType) {
+    case "add_to_cart":
+    case "checkout_start":
+      return input.payload.cart_value_cents ?? null;
+    default:
+      return null;
+  }
+}
+
+function readRevenueCents(input: RecordEventInput): number | null {
+  if (input.eventType !== "purchase") return null;
+
+  if (input.payload.revenue_cents !== undefined) {
+    return input.payload.revenue_cents;
+  }
+
+  if (input.payload.revenue !== undefined) {
+    return Math.round(input.payload.revenue * 100);
+  }
+
+  return null;
+}
+
+function readCurrency(input: RecordEventInput): string | null {
+  switch (input.eventType) {
+    case "add_to_cart":
+    case "checkout_start":
+    case "purchase":
+      return input.payload.currency;
+    default:
+      return null;
+  }
 }

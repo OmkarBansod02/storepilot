@@ -15,8 +15,9 @@ StorePilot into a generic analytics or experimentation platform.
   recommended experiment.
 - `sessions`: an anonymous visitor session for a page. Stores anonymous ID,
   optional experiment context, user agent, referrer, and first/last seen times.
-- `events`: validated snippet events. Stores session, page, event type, a small
-  typed payload JSON object, and occurrence time.
+- `events`: validated snippet events. Stores session, page, event type,
+  ecommerce columns where useful, a small typed payload JSON object, and
+  occurrence time.
 - `variants`: one generated variant proposal. Stores page, optional source
   audit, approval status, structured variant content, and rationale. Phase 4
   stores the proposal as one pending approval candidate, not as a generic
@@ -29,8 +30,9 @@ StorePilot into a generic analytics or experimentation platform.
 ## Enums
 
 - `audit_status`: `queued`, `processing`, `completed`, `failed`
-- `event_type`: `page_view`, `scroll_depth`, `cta_click`, `form_start`,
-  `form_submit`
+- `event_type`: legacy interaction events `page_view`, `scroll_depth`,
+  `cta_click`, `form_start`, `form_submit`; ecommerce funnel events
+  `product_view`, `add_to_cart`, `checkout_start`, `purchase`
 - `variant_status`: `draft`, `pending_approval`, `approved`, `rejected`,
   `deployed`
 - `experiment_status`: `draft`, `running`, `paused`, `completed`
@@ -59,21 +61,52 @@ Supported event payloads:
 - `cta_click`: `{ "label"?: string, "location"?: string }`
 - `form_start`: `{ "formId"?: string, "field"?: string }`
 - `form_submit`: `{ "formId"?: string }`
+- `product_view`: `{ "product_id"?: string, "variant_id"?: UUID }`
+- `add_to_cart`:
+  `{ "product_id"?: string, "cart_value_cents"?: number, "currency"?: string, "variant_id"?: UUID }`
+- `checkout_start`:
+  `{ "product_id"?: string, "cart_value_cents"?: number, "currency"?: string, "variant_id"?: UUID }`
+- `purchase`:
+  `{ "product_id"?: string, "revenue_cents"?: number, "revenue"?: number, "currency"?: string, "variant_id"?: UUID }`
+
+`purchase` requires either `revenue_cents` or `revenue`. The server normalizes
+`revenue` to cents for aggregation. Currency defaults to `USD` for ecommerce
+events that include cart value or revenue.
+
+Commerce fields are duplicated into event columns for simple deterministic
+aggregation:
+
+- `product_id`
+- `variant_id`
+- `revenue_cents`
+- `cart_value_cents`
+- `currency`
 
 Dashboard metrics are computed directly from `sessions` and `events`:
 
 - total sessions
-- total page views
-- raw CTA click events and unique-session click-through rate
-- raw form start events and unique-session form start rate
-- raw form submit events and unique-session form submit rate
+- total visitors, currently equal to sessions for the MVP
+- product views
+- raw add-to-cart events and unique-session add-to-cart rate
+- raw checkout-start events and unique-session checkout-start rate
+- raw purchase events and unique-session purchase conversion rate
+- total revenue in cents
+- average order value in cents
+- revenue per visitor in cents
+- per-variant funnel metrics grouped by experiment arm
 
 Dashboard conversion rates use unique sessions:
 
-- CTA click-through rate: sessions with at least one `cta_click` / total
+- add-to-cart rate: sessions with at least one `add_to_cart` / total
   sessions
-- form start rate: sessions with at least one `form_start` / total sessions
-- form submit rate: sessions with at least one `form_submit` / total sessions
+- checkout-start rate: sessions with at least one `checkout_start` / total
+  sessions
+- purchase conversion rate: sessions with at least one `purchase` / total
+  sessions
+
+The old page/CTA/form metric names are still returned as compatibility aliases
+for the current frontend. They include the matching ecommerce events so the app
+continues to render before the dashboard UI is redesigned.
 
 ## Phase 3 Diagnosis Contract
 
@@ -86,6 +119,19 @@ The dashboard metrics response now includes:
 - `scrollDepth.sessionsWithScrollDepth`
 - `scrollDepth.averageMaxScrollDepth`
 - `scrollDepth.highestScrollDepth`
+- `totalVisitors`
+- `productViews`
+- `addToCarts`
+- `checkoutStarts`
+- `purchases`
+- `addToCartRate`
+- `checkoutStartRate`
+- `purchaseConversionRate`
+- `totalRevenueCents`
+- `averageOrderValueCents`
+- `revenuePerVisitorCents`
+- `perVariantFunnel[]`: experiment ID, variant ID, arm, sessions, funnel
+  counts, funnel rates, and revenue metrics
 - `diagnosis.status`: `not_enough_data` or `ready`
 - `diagnosis.primaryBottleneck`: `insufficient_data`,
   `low_cta_engagement`, `weak_above_the_fold_interest`, `form_friction`,
@@ -100,12 +146,13 @@ The dashboard metrics response now includes:
 
 Diagnosis rules are deterministic and intentionally small:
 
-- fewer than 5 sessions or fewer than 10 page views means more data is needed
-- healthy form starts with weak submits indicates form friction
-- low average scroll depth plus low CTA click-through indicates weak
+- fewer than 5 sessions or fewer than 10 product views means more data is
+  needed
+- healthy checkout starts with weak purchases indicates checkout friction
+- low average scroll depth plus low add-to-cart rate indicates weak
   above-the-fold interest
-- low CTA click-through alone indicates CTA engagement is the bottleneck
-- good scroll depth with weak submits indicates interest is present but
+- low add-to-cart rate alone indicates CTA engagement is the bottleneck
+- good scroll depth with weak purchases indicates interest is present but
   conversion is weak
 - otherwise the funnel is treated as healthy enough for an incremental test
 
@@ -161,6 +208,10 @@ The backend then:
 - marks the variant as `approved`
 - creates one `running` experiment using the page primary conversion event
 - sets `started_at`
+
+New demo pages default the primary conversion event to `purchase`. Older rows
+may still have `form_submit` until they are reset or touched by the demo page
+helper.
 
 Runtime assignment is deterministic and intentionally small:
 
@@ -241,5 +292,13 @@ experiments, or a generalized experimentation framework.
 touching migrations. It refuses to run when `NODE_ENV=production`.
 
 The command preserves or recreates the demo `sites` and `pages` rows, restores
-the demo page `baseline_content` to the default baseline, and deletes demo page
-rows from `conversions`, `events`, `sessions`, `experiments`, and `variants`.
+the demo page `baseline_content` to the default baseline, deletes demo page
+rows from `conversions`, `events`, `sessions`, `experiments`, and `variants`,
+then seeds a narrow running ecommerce A/B fixture with:
+
+- one approved variant
+- one running experiment using `purchase`
+- control and variant sessions
+- `product_view`, `add_to_cart`, `checkout_start`, `purchase`, and
+  `scroll_depth` events
+- revenue-bearing purchase events and matching conversion attribution rows

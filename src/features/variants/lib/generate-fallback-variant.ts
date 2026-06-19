@@ -35,7 +35,7 @@ export function generateFallbackVariant(params: {
           baseline.trustProofRow[0],
         ],
         rationale:
-          "The diagnosis shows visitors are starting the form but not completing it. This proposal keeps the product promise focused on purchase intent and adds reassurance around effort and commitment before the conversion step.",
+          "The diagnosis shows shoppers are starting checkout but not completing purchase. This proposal keeps the product promise focused on purchase intent and adds reassurance around effort and commitment before the conversion step.",
         targetArea: "signup_form",
         expectedImpact,
         sourceDiagnosis,

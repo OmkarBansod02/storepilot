@@ -143,8 +143,10 @@ contract.
   recommended experiment.
 - `sessions` — anonymous visitor sessions, optionally tagged with
   `experiment_id` and `experiment_arm`.
-- `events` — validated snippet events with typed payloads (`page_view`,
-  `scroll_depth`, `cta_click`, `form_start`, `form_submit`).
+- `events` — validated snippet events with typed payloads, including legacy
+  interaction events and ecommerce funnel events (`product_view`,
+  `add_to_cart`, `checkout_start`, `purchase`) with normalized commerce
+  columns where useful.
 - `variants` — one pending variant proposal at a time; structured content +
   rationale + source diagnosis snapshot + `source` (`ai` or
   `deterministic_fallback`).

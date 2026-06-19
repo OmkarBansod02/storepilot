@@ -6,7 +6,9 @@ import postgres from "postgres";
 const DEMO_SITE_NAME = "StorePilot Demo";
 const DEMO_SITE_URL = "http://localhost:3000/demo";
 const DEMO_PAGE_TITLE = "Northstar Pack - Demo Product Page";
-const PRIMARY_CONVERSION_EVENT = "form_submit";
+const PRIMARY_CONVERSION_EVENT = "purchase";
+const DEMO_PRODUCT_ID = "northstar-pack";
+const DEMO_CURRENCY = "USD";
 
 interface DemoContent {
   brand: string;
@@ -55,6 +57,24 @@ interface ResetCounts {
   sessions: number;
   experiments: number;
   variants: number;
+}
+
+interface SeedCounts {
+  conversions: number;
+  events: number;
+  sessions: number;
+  experiments: number;
+  variants: number;
+  revenueCents: number;
+}
+
+interface SeedSessionPlan {
+  arm: "control" | "variant";
+  anonymousId: string;
+  addToCart: boolean;
+  checkoutStart: boolean;
+  purchaseRevenueCents: number | null;
+  scrollDepth: 25 | 50 | 75 | 100;
 }
 
 type TransactionSql = postgres.TransactionSql;
@@ -265,7 +285,299 @@ async function resetDemoState(
   };
 }
 
-function printResult(demoPage: DemoPage, counts: ResetCounts): void {
+function buildSeededVariantContent(): Record<string, postgres.JSONValue> {
+  return {
+    headline: "Pack faster for every quick escape",
+    subheadline:
+      "Northstar Pack keeps daily carry, weekend gear, and travel essentials organized without overpacking.",
+    primaryCtaLabel: "Add Northstar Pack",
+    trustProofRow: [
+      "Free 2-day shipping",
+      "30-day easy returns",
+      "4.8/5 from verified buyers",
+    ],
+    targetArea: "hero",
+    expectedImpact:
+      "Increase add-to-cart intent and purchase confidence on the product page.",
+    sourceDiagnosis: {
+      primaryBottleneck: "healthy_funnel",
+      title: "Seeded ecommerce demo baseline",
+      recommendedExperimentTitle: "Test a sharper product promise",
+    },
+    source: "deterministic_fallback",
+  };
+}
+
+function buildSeedSessionPlans(): SeedSessionPlan[] {
+  const controlRevenue = [8900, null, null, null, null, null, null, null, null, null, null, null];
+  const variantRevenue = [8900, 10900, 12900, 8900, null, null, null, null, null, null, null, null];
+
+  return [
+    ...controlRevenue.map((revenue, index): SeedSessionPlan => ({
+      arm: "control",
+      anonymousId: `demo-control-${String(index + 1).padStart(2, "0")}`,
+      addToCart: index < 4,
+      checkoutStart: index < 2,
+      purchaseRevenueCents: revenue,
+      scrollDepth: index < 5 ? 75 : 50,
+    })),
+    ...variantRevenue.map((revenue, index): SeedSessionPlan => ({
+      arm: "variant",
+      anonymousId: `demo-variant-${String(index + 1).padStart(2, "0")}`,
+      addToCart: index < 7,
+      checkoutStart: index < 5,
+      purchaseRevenueCents: revenue,
+      scrollDepth: index < 8 ? 100 : 75,
+    })),
+  ];
+}
+
+async function insertSeedEvent(
+  tx: TransactionSql,
+  params: {
+    sessionId: string;
+    pageId: string;
+    eventType:
+      | "product_view"
+      | "add_to_cart"
+      | "checkout_start"
+      | "purchase"
+      | "scroll_depth";
+    payload: Record<string, postgres.JSONValue>;
+    variantId: string | null;
+    revenueCents?: number;
+    cartValueCents?: number;
+    occurredAt: Date;
+  },
+): Promise<void> {
+  await tx`
+    insert into events (
+      session_id,
+      page_id,
+      event_type,
+      product_id,
+      variant_id,
+      revenue_cents,
+      cart_value_cents,
+      currency,
+      payload,
+      occurred_at
+    )
+    values (
+      ${params.sessionId},
+      ${params.pageId},
+      ${params.eventType},
+      ${params.eventType === "scroll_depth" ? null : DEMO_PRODUCT_ID},
+      ${params.variantId},
+      ${params.revenueCents ?? null},
+      ${params.cartValueCents ?? null},
+      ${params.eventType === "scroll_depth" ? null : DEMO_CURRENCY},
+      ${tx.json(params.payload)},
+      ${params.occurredAt}
+    )
+  `;
+}
+
+function buildEventPayload(params: {
+  experimentId: string;
+  arm: "control" | "variant";
+  variantId: string | null;
+  extra?: Record<string, postgres.JSONValue>;
+}): Record<string, postgres.JSONValue> {
+  return {
+    product_id: DEMO_PRODUCT_ID,
+    currency: DEMO_CURRENCY,
+    experimentId: params.experimentId,
+    variantArm: params.arm,
+    ...(params.variantId ? { variant_id: params.variantId } : {}),
+    ...(params.extra ?? {}),
+  };
+}
+
+async function seedDemoEcommerceEvents(
+  tx: TransactionSql,
+  pageId: string,
+): Promise<SeedCounts> {
+  const variantContent = buildSeededVariantContent();
+  const insertedVariants = await tx<{ id: string }[]>`
+    insert into variants (page_id, status, content, rationale)
+    values (
+      ${pageId},
+      'approved',
+      ${tx.json(variantContent)},
+      ${"Seeded demo variant for ecommerce funnel analytics."}
+    )
+    returning id
+  `;
+  const variantId = insertedVariants[0].id;
+
+  const insertedExperiments = await tx<{ id: string }[]>`
+    insert into experiments (
+      page_id,
+      variant_id,
+      status,
+      primary_conversion_event,
+      started_at
+    )
+    values (
+      ${pageId},
+      ${variantId},
+      'running',
+      ${PRIMARY_CONVERSION_EVENT},
+      now()
+    )
+    returning id
+  `;
+  const experimentId = insertedExperiments[0].id;
+  const plans = buildSeedSessionPlans();
+
+  let events = 0;
+  let conversions = 0;
+  let revenueCents = 0;
+
+  for (const [index, plan] of plans.entries()) {
+    const insertedSessions = await tx<{ id: string }[]>`
+      insert into sessions (
+        page_id,
+        anonymous_id,
+        experiment_id,
+        experiment_arm,
+        user_agent,
+        referrer,
+        first_seen_at,
+        last_seen_at
+      )
+      values (
+        ${pageId},
+        ${plan.anonymousId},
+        ${experimentId},
+        ${plan.arm},
+        ${"StorePilot demo seeder"},
+        ${DEMO_SITE_URL},
+        now() - (${plans.length - index} || ' minutes')::interval,
+        now() - (${plans.length - index - 1} || ' minutes')::interval
+      )
+      returning id
+    `;
+    const sessionId = insertedSessions[0].id;
+    const eventVariantId = plan.arm === "variant" ? variantId : null;
+    const occurredAt = new Date(Date.now() - (plans.length - index) * 60_000);
+
+    await insertSeedEvent(tx, {
+      sessionId,
+      pageId,
+      eventType: "product_view",
+      payload: buildEventPayload({
+        experimentId,
+        arm: plan.arm,
+        variantId: eventVariantId,
+      }),
+      variantId: eventVariantId,
+      occurredAt,
+    });
+    events += 1;
+
+    await insertSeedEvent(tx, {
+      sessionId,
+      pageId,
+      eventType: "scroll_depth",
+      payload: { depth: plan.scrollDepth },
+      variantId: null,
+      occurredAt,
+    });
+    events += 1;
+
+    if (plan.addToCart) {
+      await insertSeedEvent(tx, {
+        sessionId,
+        pageId,
+        eventType: "add_to_cart",
+        payload: buildEventPayload({
+          experimentId,
+          arm: plan.arm,
+          variantId: eventVariantId,
+          extra: { cart_value_cents: 8900 },
+        }),
+        variantId: eventVariantId,
+        cartValueCents: 8900,
+        occurredAt,
+      });
+      events += 1;
+    }
+
+    if (plan.checkoutStart) {
+      await insertSeedEvent(tx, {
+        sessionId,
+        pageId,
+        eventType: "checkout_start",
+        payload: buildEventPayload({
+          experimentId,
+          arm: plan.arm,
+          variantId: eventVariantId,
+          extra: { cart_value_cents: plan.purchaseRevenueCents ?? 8900 },
+        }),
+        variantId: eventVariantId,
+        cartValueCents: plan.purchaseRevenueCents ?? 8900,
+        occurredAt,
+      });
+      events += 1;
+    }
+
+    if (plan.purchaseRevenueCents !== null) {
+      await insertSeedEvent(tx, {
+        sessionId,
+        pageId,
+        eventType: "purchase",
+        payload: buildEventPayload({
+          experimentId,
+          arm: plan.arm,
+          variantId: eventVariantId,
+          extra: { revenue_cents: plan.purchaseRevenueCents },
+        }),
+        variantId: eventVariantId,
+        revenueCents: plan.purchaseRevenueCents,
+        occurredAt,
+      });
+      events += 1;
+      revenueCents += plan.purchaseRevenueCents;
+
+      await tx`
+        insert into conversions (
+          experiment_id,
+          session_id,
+          page_id,
+          arm,
+          event_name,
+          occurred_at
+        )
+        values (
+          ${experimentId},
+          ${sessionId},
+          ${pageId},
+          ${plan.arm},
+          ${PRIMARY_CONVERSION_EVENT},
+          ${occurredAt}
+        )
+      `;
+      conversions += 1;
+    }
+  }
+
+  return {
+    conversions,
+    events,
+    sessions: plans.length,
+    experiments: 1,
+    variants: 1,
+    revenueCents,
+  };
+}
+
+function printResult(
+  demoPage: DemoPage,
+  counts: ResetCounts,
+  seedCounts: SeedCounts,
+): void {
   console.log("Demo reset complete.");
   console.log(`Site: ${demoPage.siteId}`);
   console.log(`Page: ${demoPage.pageId}`);
@@ -276,6 +588,13 @@ function printResult(demoPage: DemoPage, counts: ResetCounts): void {
   console.log(`- experiments: ${counts.experiments}`);
   console.log(`- variants: ${counts.variants}`);
   console.log("Demo baseline_content restored to the default baseline.");
+  console.log("Seeded ecommerce demo rows:");
+  console.log(`- sessions: ${seedCounts.sessions}`);
+  console.log(`- events: ${seedCounts.events}`);
+  console.log(`- conversions: ${seedCounts.conversions}`);
+  console.log(`- experiments: ${seedCounts.experiments}`);
+  console.log(`- variants: ${seedCounts.variants}`);
+  console.log(`- revenue_cents: ${seedCounts.revenueCents}`);
 }
 
 async function main(): Promise<void> {
@@ -292,11 +611,12 @@ async function main(): Promise<void> {
     const result = await sql.begin(async (tx) => {
       const demoPage = await ensureDemoPage(tx, baselineContent);
       const counts = await resetDemoState(tx, demoPage.pageId);
+      const seedCounts = await seedDemoEcommerceEvents(tx, demoPage.pageId);
 
-      return { demoPage, counts };
+      return { demoPage, counts, seedCounts };
     });
 
-    printResult(result.demoPage, result.counts);
+    printResult(result.demoPage, result.counts, result.seedCounts);
   } finally {
     await sql.end();
   }

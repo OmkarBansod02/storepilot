@@ -43,6 +43,17 @@ export interface DashboardDiagnosis {
 
 export interface DiagnosisMetricInput {
   totalSessions: number;
+  totalVisitors: number;
+  productViews: number;
+  addToCarts: number;
+  checkoutStarts: number;
+  purchases: number;
+  addToCartRate: number;
+  checkoutStartRate: number;
+  purchaseConversionRate: number;
+  totalRevenueCents: number;
+  averageOrderValueCents: number;
+  revenuePerVisitorCents: number;
   totalPageViews: number;
   ctaClicks: number;
   formStarts: number;
@@ -53,15 +64,24 @@ export interface DiagnosisMetricInput {
   scrollDepth: ScrollDepthSummary;
 }
 
-export interface DashboardMetrics {
-  totalSessions: number;
-  totalPageViews: number;
-  ctaClicks: number;
-  formStarts: number;
-  formSubmits: number;
-  ctaClickThroughRate: number;
-  formStartRate: number;
-  formSubmitRate: number;
-  scrollDepth: ScrollDepthSummary;
+export interface VariantFunnelMetrics {
+  experimentId: string | null;
+  variantId: string | null;
+  arm: "control" | "variant" | "unassigned";
+  sessions: number;
+  productViews: number;
+  addToCarts: number;
+  checkoutStarts: number;
+  purchases: number;
+  addToCartRate: number;
+  checkoutStartRate: number;
+  purchaseConversionRate: number;
+  totalRevenueCents: number;
+  averageOrderValueCents: number;
+  revenuePerVisitorCents: number;
+}
+
+export interface DashboardMetrics extends DiagnosisMetricInput {
+  perVariantFunnel: VariantFunnelMetrics[];
   diagnosis: DashboardDiagnosis;
 }

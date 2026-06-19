@@ -35,9 +35,13 @@ function buildVariantAiPrompt(context: VariantGenerationContext): VariantAiPromp
         },
         metrics: {
           totalSessions: context.metrics.totalSessions,
-          ctaClickThroughRate: context.metrics.ctaClickThroughRate,
-          formStartRate: context.metrics.formStartRate,
-          formSubmitRate: context.metrics.formSubmitRate,
+          productViews: context.metrics.productViews,
+          addToCartRate: context.metrics.addToCartRate,
+          checkoutStartRate: context.metrics.checkoutStartRate,
+          purchaseConversionRate: context.metrics.purchaseConversionRate,
+          totalRevenueCents: context.metrics.totalRevenueCents,
+          averageOrderValueCents: context.metrics.averageOrderValueCents,
+          revenuePerVisitorCents: context.metrics.revenuePerVisitorCents,
           averageMaxScrollDepth:
             context.metrics.scrollDepth.averageMaxScrollDepth,
         },

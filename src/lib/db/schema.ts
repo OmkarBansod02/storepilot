@@ -1,6 +1,7 @@
 import { sql } from "drizzle-orm";
 import {
   index,
+  integer,
   jsonb,
   pgEnum,
   pgTable,
@@ -22,6 +23,10 @@ export const eventTypeEnum = pgEnum("event_type", [
   "cta_click",
   "form_start",
   "form_submit",
+  "product_view",
+  "add_to_cart",
+  "checkout_start",
+  "purchase",
 ]);
 
 export const variantStatusEnum = pgEnum("variant_status", [
@@ -106,7 +111,7 @@ export const pages = pgTable(
     url: text("url").notNull(),
     title: text("title"),
     primaryConversionEvent: text("primary_conversion_event")
-      .default("form_submit")
+      .default("purchase")
       .notNull(),
     baselineContent: jsonb("baseline_content").$type<PageBaselineContent | null>(),
     ...timestamps(),
@@ -171,7 +176,7 @@ export const experiments = pgTable(
       .references(() => variants.id, { onDelete: "restrict" }),
     status: experimentStatusEnum("status").default("draft").notNull(),
     primaryConversionEvent: text("primary_conversion_event")
-      .default("form_submit")
+      .default("purchase")
       .notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
@@ -223,6 +228,13 @@ export const events = pgTable(
       .notNull()
       .references(() => pages.id, { onDelete: "cascade" }),
     eventType: eventTypeEnum("event_type").notNull(),
+    productId: text("product_id"),
+    variantId: uuid("variant_id").references(() => variants.id, {
+      onDelete: "set null",
+    }),
+    revenueCents: integer("revenue_cents"),
+    cartValueCents: integer("cart_value_cents"),
+    currency: text("currency"),
     payload: jsonb("payload")
       .$type<JsonObject>()
       .default(sql`'{}'::jsonb`)
@@ -235,6 +247,8 @@ export const events = pgTable(
     index("events_session_id_idx").on(table.sessionId),
     index("events_page_id_idx").on(table.pageId),
     index("events_event_type_idx").on(table.eventType),
+    index("events_product_id_idx").on(table.productId),
+    index("events_variant_id_idx").on(table.variantId),
   ],
 );
 

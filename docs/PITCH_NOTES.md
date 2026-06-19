@@ -1,0 +1,189 @@
+# Pitch Notes
+
+Talking points for a short founder-facing walkthrough of Liftpilot. The goal
+is to communicate, in under five minutes, what was built, why it was built
+this way, and what the simplifications and next steps are.
+
+This is a focused exploration of self-improving landing pages, not a launched
+product. Frame it as evidence of product and engineering judgment.
+
+---
+
+## One-line description
+
+> Liftpilot is the smallest believable version of a self-improving landing
+> page loop: audit, observe, diagnose, generate, approve, test, deploy.
+
+---
+
+## Why this exists
+
+- Landing pages are a high-leverage surface for most early-stage companies,
+  and most teams iterate on them too slowly.
+- Existing experimentation tools either require a real growth team to drive
+  them, or they hand the keys to an AI without enough guardrails.
+- The interesting question is not "can AI rewrite a hero section" — it's
+  "what does a small, trustworthy loop around that decision look like?"
+- Liftpilot is a working answer at MVP scale. One page, one funnel, one
+  experiment, human approval, deterministic truth.
+
+---
+
+## What it does, in seven beats
+
+1. **Audit a URL.** Playwright renders the page, deterministic heuristics
+   produce a structured audit with findings and one recommended experiment.
+2. **Observe a demo landing page.** An in-app tracker records sessions,
+   page views, scroll depth milestones, CTA clicks, form starts, and form
+   submits into Postgres.
+3. **Diagnose.** A small deterministic rule set turns aggregated metrics
+   into one primary bottleneck with supporting signals and a confidence
+   level.
+4. **Generate.** A variant proposal is drafted from the diagnosis and the
+   current baseline (AI when configured, deterministic fallback otherwise)
+   and validated through a strict zod schema.
+5. **Approve.** A human approves the variant. No experiment runs without
+   approval.
+6. **Test.** One running A/B experiment per page. Visitors are bucketed by
+   hashing `experimentId + anonymousId`. Conversions are attributed by arm.
+7. **Deploy.** Results are recomputed deterministically. A conclusive
+   winner writes the variant content into the page baseline; the
+   experiment is completed.
+
+---
+
+## The product principle that holds it together
+
+> AI drafts wording. Deterministic code owns truth.
+
+- Truth: validation, ingestion, aggregation, assignment, attribution,
+  results, deploy.
+- Wording: variant copy, rationale, framing.
+
+Every AI output is parsed through zod before it is persisted. The full loop
+works with no AI key — the deterministic fallback generator produces a
+validated proposal mapped from the diagnosed bottleneck. AI is a quality
+multiplier, not a load-bearing dependency.
+
+---
+
+## What is interesting about the engineering
+
+- **Feature-first layout.** Each feature (`audit`, `analytics`, `snippet`,
+  `variants`, `experiments`, `demo`) owns its `components/`, `server/`,
+  `schemas/`, and `lib/`. Route handlers stay thin.
+- **Strict zod boundaries.** Request bodies, query params, AI outputs, and
+  the deploy-time baseline rewrite are all parsed at the edge.
+- **Single source of truth in Postgres.** Small Drizzle schema, JSONB only
+  where structured payloads earn their keep.
+- **Deterministic experiment runtime.** Hash-based bucketing, cookie
+  pinning, server-side validation that the experiment is still running
+  before persisting arm context, conversion rows written only when an
+  event matches the experiment's primary conversion event.
+- **Transactional deploy.** Result calculation, baseline rewrite, variant
+  status update, and experiment completion happen inside a single DB
+  transaction with conflict checks at the status update.
+- **Honest fallbacks.** No silent AI failures: if the model is missing or
+  the response is invalid, the fallback path runs and is reported back.
+
+---
+
+## What is intentionally simplified
+
+Be upfront about scope. The shortcuts are deliberate and documented.
+
+- One site, one page, one primary conversion event, one active experiment,
+  one pending variant proposal.
+- No authentication, organizations, or roles.
+- No statistical inference: results are raw conversion rates and a simple
+  winner rule (`inconclusive` if either arm has zero sessions or the rates
+  are equal). There are no confidence intervals or significance tests.
+- The "snippet" is an in-app React provider on the demo page, not a
+  third-party `<script>` tag.
+- Audit findings are deterministic heuristics, not an AI summary of the
+  page. Audits run inline against the request.
+- Variant scope is hero copy, primary CTA label, and a small trust-proof
+  row. No DOM rewriting or visual editor.
+- Screenshots and extracted signals are stored inline rather than in
+  object storage.
+- Anonymous IDs live in browser local storage; there is no identity graph.
+
+---
+
+## What would come next
+
+Roughly ordered by value.
+
+1. **Real statistical rigor.** Confidence intervals, minimum sample size
+   guards, and a clearer "not enough data" state.
+2. **External snippet SDK.** A small standalone `<script>` so the loop
+   works on any site without integrating React.
+3. **Multi-tenant + auth.** Sites, pages, members, API keys, billing.
+4. **Background jobs.** Move audit capture and AI calls off the request
+   path with Inngest, Trigger.dev, or a queue.
+5. **Object storage.** Screenshots and large extracted artifacts in S3/R2,
+   with signed URLs.
+6. **Richer variants.** Iterative generation, side-by-side preview,
+   edit-before-approve, structured rollback history.
+7. **Deeper diagnosis.** Session-level paths, segment slicing, and
+   AI-assisted hypotheses grounded in real cohorts.
+8. **CMS integrations.** Push approved baselines back into the host CMS.
+9. **Observability.** Structured logs, error tracking, and product
+   analytics on Liftpilot itself.
+
+---
+
+## Quick-fire Q&A
+
+**Is this production-ready?**
+No. It is an MVP-scale exploration. The loop is end-to-end, but several
+pieces (statistics, auth, scale, external snippet) are intentionally out of
+scope.
+
+**Is this a Sherpa clone?**
+No. It is a Sherpa-inspired exploration of one specific pattern — a small,
+human-approved loop around landing page optimization — built to demonstrate
+product and engineering judgment, not to compete commercially.
+
+**Why no proper stats?**
+Because adding noisy statistical machinery without enough traffic to back
+it up would feel like a tell. The current rule is honest: if either arm
+has no sessions or rates are equal, the result is `inconclusive` and
+deploy is refused. Real significance testing is the obvious next step.
+
+**Why is AI optional?**
+Because product truth shouldn't depend on a third-party model being
+available, performant, or correctly formatted. AI is a quality multiplier
+on variant copy and rationale, not a load-bearing dependency.
+
+**Why is the snippet not a third-party `<script>`?**
+Scope. The demo page is bundled in the same Next.js app, so a React
+provider is the cleanest way to wire it without inventing a second build
+pipeline. Externalizing the snippet is on the next-steps list.
+
+**Why one experiment at a time?**
+The MVP is about showing the loop cleanly, not about being a generalized
+experimentation framework. Multiple concurrent experiments add traffic
+splitting and analysis complexity that would obscure the core story.
+
+**What would you build next if you had a week?**
+Real statistics with sample size guards, an external snippet SDK, and
+moving audit capture and AI calls onto a background job runner. In that
+order.
+
+---
+
+## Suggested live walk
+
+1. Open the repo and skim `README.md` — 30 seconds.
+2. Open `/audit`, paste a real URL, narrate the audit while it runs.
+3. Open `/demo`, click through a session, point at the live event stream
+   (or just refresh `/dashboard`).
+4. Show the diagnosis card and explain the rule that produced it.
+5. Generate a variant, point out the zod-validated proposal and the
+   deterministic fallback note in the source.
+6. Approve, then show `/experiments` with arm assignments updating.
+7. Force a few conversions across arms, deploy the winner, refresh `/demo`
+   to show the new baseline.
+8. Close on the principle: AI drafts wording, deterministic code owns
+   truth.

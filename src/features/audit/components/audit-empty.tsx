@@ -43,7 +43,7 @@ export function AuditEmpty() {
               Paste a URL to get started
             </h3>
             <p className="mt-2 text-[14px] leading-relaxed text-muted-foreground">
-              Enter any public landing page URL and get a structured conversion
+              Enter any public product page URL and get a structured conversion
               audit in seconds.
             </p>
           </div>

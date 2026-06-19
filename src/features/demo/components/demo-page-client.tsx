@@ -24,7 +24,7 @@ import { DemoSignupForm } from "./demo-signup-form";
 import { DemoSocialProof } from "./demo-social-proof";
 
 function getAssignmentCookieName(experimentId: string): string {
-  return `liftpilot_exp_${experimentId}`;
+  return `storepilot_exp_${experimentId}`;
 }
 
 function readAssignmentCookie(experimentId: string): ExperimentAssignment | null {

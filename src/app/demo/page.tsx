@@ -56,7 +56,7 @@ export default async function DemoPage({ searchParams }: DemoPageProps) {
           </span>
           <nav className="flex items-center gap-4">
             <Button asChild>
-              <a href="#signup">Get started</a>
+              <a href="#signup">{baseline.primaryCtaLabel}</a>
             </Button>
           </nav>
         </div>
@@ -79,7 +79,7 @@ export default async function DemoPage({ searchParams }: DemoPageProps) {
             href="/dashboard"
             className="font-medium text-primary hover:underline underline-offset-2 transition-colors"
           >
-            View Liftpilot Dashboard &rarr;
+            View StorePilot Dashboard &rarr;
           </Link>
         </div>
       </footer>

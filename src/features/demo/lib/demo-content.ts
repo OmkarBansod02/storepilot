@@ -1,45 +1,45 @@
 export const demoContent = {
-  brand: "Acme Launch",
-  tagline: "Ship faster. Convert better.",
-  headline: "The launch platform that\ngrows with your product",
+  brand: "Northstar Pack",
+  tagline: "Carry less. Convert more trail miles.",
+  headline: "The daypack built for\nfast-moving city escapes",
   subheadline:
-    "Acme Launch helps early-stage teams ship landing pages, collect real user signal, and iterate toward higher conversion — without a full growth team.",
-  ctaLabel: "Start free trial",
-  secondaryCta: "See how it works",
+    "Northstar Pack keeps essentials organized, water protected, and easy to reach so weekend travelers can move from commute to trail without repacking.",
+  ctaLabel: "Add to cart",
+  secondaryCta: "View details",
   features: [
     {
-      title: "Launch in minutes",
+      title: "Organized in seconds",
       description:
-        "Go from idea to live page with pre-built templates and smart defaults. No designer required.",
+        "Dedicated pockets keep keys, layers, tech, and snacks easy to find without unpacking the whole bag.",
     },
     {
-      title: "Real-time analytics",
+      title: "Weather-ready shell",
       description:
-        "See who's visiting, where they drop off, and which copy resonates — all in one clean dashboard.",
+        "A recycled ripstop exterior and sealed zipper help protect the gear you actually care about.",
     },
     {
-      title: "Built-in A/B testing",
+      title: "Made for daily carry",
       description:
-        "Test headlines, CTAs, and layouts with one click. No third-party tools or complex setup.",
+        "A compact frame, padded straps, and pass-through sleeve keep it comfortable from train ride to trailhead.",
     },
   ],
   socialProof: {
-    metric: "2,400+",
-    metricLabel: "teams launched",
+    metric: "18,000+",
+    metricLabel: "packs shipped",
     quotes: [
       {
-        text: "We doubled our signup rate in two weeks.",
-        author: "Sarah K.",
-        role: "Head of Growth, Relay",
+        text: "It fits my camera, jacket, and laptop without feeling bulky.",
+        author: "Maya R.",
+        role: "Verified buyer",
       },
       {
-        text: "Finally, a tool that doesn't require a full-time analyst.",
-        author: "Marcus T.",
-        role: "Founder, Onward",
+        text: "The first small pack that survived a wet commute and a rocky hike.",
+        author: "Jon T.",
+        role: "Verified buyer",
       },
     ],
   },
-  formHeadline: "Get early access",
+  formHeadline: "Save 15% on your first order",
   formDescription:
-    "Join the waitlist and be the first to try the next version of Acme Launch.",
+    "Join the list for launch drops, restock alerts, and a first-order discount.",
 } as const;

@@ -1,6 +1,6 @@
 "use client";
 
-const ANON_ID_KEY = "liftpilot_anon_id";
+const ANON_ID_KEY = "storepilot_anon_id";
 
 function createAnonymousId(): string {
   return crypto.randomUUID();

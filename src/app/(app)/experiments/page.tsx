@@ -32,7 +32,7 @@ export default async function ExperimentsPage() {
     <PageContainer>
       <PageHeader
         title="Experiments"
-        description="Review, approve, and track A/B tests on your landing page."
+        description="Review, approve, and track A/B tests on your product page."
       />
 
       <div className="mt-10 grid gap-6 lg:grid-cols-3">

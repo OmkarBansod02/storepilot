@@ -1,9 +1,9 @@
 
-# Liftpilot  — Product Requirements Document
+# StorePilot — Product Requirements Document
 
 ## Summary
 
-Liftpilot  is a Sherpa-inspired MVP for self-improving landing pages.
+StorePilot is an ecommerce optimization MVP for self-improving storefront pages.
 
 It helps a founder or product/growth engineer:
 - paste a URL and get a fast conversion audit
@@ -14,8 +14,6 @@ It helps a founder or product/growth engineer:
 - approve it
 - run one A/B test
 - and deploy the winner
-
-This is not a full Sherpa clone.
 
 It is a narrow, believable product wedge designed to demonstrate the core product loop:
 **audit → observe → diagnose → generate → approve → test → ship**
@@ -37,7 +35,7 @@ The MVP should:
 
 ## Why this project exists
 
-The purpose of this project is to build the smallest believable version of a Sherpa-like workflow.
+The purpose of this project is to build the smallest believable version of an autonomous ecommerce optimization workflow.
 
 It should show:
 - product understanding
@@ -56,7 +54,7 @@ This project is intentionally optimized for:
 
 ## Product vision
 
-Liftpilot  should feel like a focused AI-native growth tool.
+StorePilot should feel like a focused AI-native growth tool for ecommerce teams.
 
 It should not feel like:
 - a giant analytics platform
@@ -65,7 +63,7 @@ It should not feel like:
 - a bloated experimentation suite
 
 The vision is:
-A system that helps a landing page move toward a better version through a clear, measurable, human-approved loop.
+A system that helps a storefront page move toward a better version through a clear, measurable, human-approved loop.
 
 ---
 
@@ -77,7 +75,7 @@ Primary user:
 - technical marketer
 
 Initial usage assumptions:
-- they care about landing page conversion
+- they care about product-page conversion
 - they want fast signal
 - they do not want to wire many tools together manually
 - they value a system that suggests and tests improvements
@@ -87,7 +85,7 @@ Initial usage assumptions:
 ## MVP scope
 
 The MVP supports:
-- one landing page
+- one product page
 - one primary conversion metric
 - one active experiment at a time
 - one generated variant at a time
@@ -252,7 +250,7 @@ The MVP is successful if it can demonstrate this full story:
 
 1. Paste a URL
 2. Get a believable audit
-3. Install snippet on a demo landing page
+3. Install snippet on a demo product page
 4. Record real events
 5. Show the likely bottleneck
 6. Generate one better variant
@@ -275,7 +273,7 @@ A strong result is a product that:
 ### Story 1 — Instant audit
 As a founder,
 I want to paste a URL and get a useful conversion audit,
-so I can quickly understand what may be hurting signups.
+so I can quickly understand what may be hurting purchases or lead capture.
 
 ### Story 2 — Behavior-backed diagnosis
 As a growth/product engineer,
@@ -486,7 +484,7 @@ Do not cut:
 
 ## Final product standard
 
-Liftpilot  should feel like:
+StorePilot should feel like:
 - a sharp, narrow product
 - built by someone who understands both product and engineering
 - careful about where AI is useful

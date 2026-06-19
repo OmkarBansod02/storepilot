@@ -3,9 +3,9 @@ import { sites, pages } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { getDefaultDemoPageBaseline } from "@/features/demo/lib/default-demo-page-baseline";
 
-const DEMO_SITE_NAME = "Liftpilot Demo";
+const DEMO_SITE_NAME = "StorePilot Demo";
 const DEMO_SITE_URL = "http://localhost:3000/demo";
-const DEMO_PAGE_TITLE = "Acme Launch — Demo Landing Page";
+const DEMO_PAGE_TITLE = "Northstar Pack - Demo Product Page";
 
 export async function ensureDemoPage(): Promise<{ pageId: string; siteId: string }> {
   const baselineContent = getDefaultDemoPageBaseline();

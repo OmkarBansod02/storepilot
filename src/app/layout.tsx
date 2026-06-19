@@ -4,9 +4,9 @@ import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Liftpilot — Self-improving landing pages",
+  title: "StorePilot — Ecommerce optimization engine",
   description:
-    "Audit, observe, diagnose, generate, approve, test, and ship better landing pages with a measurable feedback loop.",
+    "Track storefront funnel events, generate product-page variants, test conversion, and promote winning variants.",
 };
 
 export default function RootLayout({

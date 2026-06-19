@@ -26,8 +26,8 @@ export function VariantGenerationCta({
               Generate a variant proposal
             </h3>
             <p className="mt-2.5 max-w-xl text-[14px] leading-relaxed text-muted-foreground">
-              Based on the diagnosis above, Liftpilot will draft one improved
-              version of your landing page. You&apos;ll review the proposed
+              Based on the diagnosis above, StorePilot will draft one improved
+              version of your product page. You&apos;ll review the proposed
               changes before anything goes live.
             </p>
           </div>

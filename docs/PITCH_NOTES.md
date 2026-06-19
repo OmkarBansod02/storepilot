@@ -1,30 +1,30 @@
 # Pitch Notes
 
-Talking points for a short founder-facing walkthrough of Liftpilot. The goal
+Talking points for a short founder-facing walkthrough of StorePilot. The goal
 is to communicate, in under five minutes, what was built, why it was built
 this way, and what the simplifications and next steps are.
 
-This is a focused exploration of self-improving landing pages, not a launched
+This is a focused exploration of ecommerce product-page optimization, not a launched
 product. Frame it as evidence of product and engineering judgment.
 
 ---
 
 ## One-line description
 
-> Liftpilot is the smallest believable version of a self-improving landing
-> page loop: audit, observe, diagnose, generate, approve, test, deploy.
+> StorePilot is the smallest believable version of an autonomous ecommerce
+> optimization loop: audit, observe, diagnose, generate, approve, test, deploy.
 
 ---
 
 ## Why this exists
 
-- Landing pages are a high-leverage surface for most early-stage companies,
-  and most teams iterate on them too slowly.
+- Product pages are a high-leverage surface for ecommerce teams, and most
+  teams iterate on them too slowly.
 - Existing experimentation tools either require a real growth team to drive
   them, or they hand the keys to an AI without enough guardrails.
 - The interesting question is not "can AI rewrite a hero section" — it's
   "what does a small, trustworthy loop around that decision look like?"
-- Liftpilot is a working answer at MVP scale. One page, one funnel, one
+- StorePilot is a working answer at MVP scale. One page, one funnel, one
   experiment, human approval, deterministic truth.
 
 ---
@@ -33,7 +33,7 @@ product. Frame it as evidence of product and engineering judgment.
 
 1. **Audit a URL.** Playwright renders the page, deterministic heuristics
    produce a structured audit with findings and one recommended experiment.
-2. **Observe a demo landing page.** An in-app tracker records sessions,
+2. **Observe a demo product page.** An in-app tracker records sessions,
    page views, scroll depth milestones, CTA clicks, form starts, and form
    submits into Postgres.
 3. **Diagnose.** A small deterministic rule set turns aggregated metrics
@@ -129,7 +129,7 @@ Roughly ordered by value.
    AI-assisted hypotheses grounded in real cohorts.
 8. **CMS integrations.** Push approved baselines back into the host CMS.
 9. **Observability.** Structured logs, error tracking, and product
-   analytics on Liftpilot itself.
+   analytics on StorePilot itself.
 
 ---
 
@@ -140,10 +140,10 @@ No. It is an MVP-scale exploration. The loop is end-to-end, but several
 pieces (statistics, auth, scale, external snippet) are intentionally out of
 scope.
 
-**Is this a Sherpa clone?**
-No. It is a Sherpa-inspired exploration of one specific pattern — a small,
-human-approved loop around landing page optimization — built to demonstrate
-product and engineering judgment, not to compete commercially.
+**Is this trying to be a full ecommerce platform?**
+No. It is a small, human-approved loop around product-page optimization,
+built to demonstrate product and engineering judgment without replacing the
+storefront, CMS, analytics stack, or checkout.
 
 **Why no proper stats?**
 Because adding noisy statistical machinery without enough traffic to back

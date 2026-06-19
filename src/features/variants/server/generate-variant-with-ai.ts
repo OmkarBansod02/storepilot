@@ -18,11 +18,11 @@ function buildVariantAiPrompt(context: VariantGenerationContext): VariantAiPromp
   return {
     system:
       [
-        "Generate exactly one improved landing-page variant proposal.",
+        "Generate exactly one improved ecommerce product-page variant proposal.",
         "Return only the structured fields requested by the schema.",
         'Set source to exactly "ai".',
         "Do not include experiment setup, traffic splitting, deployment, or arbitrary page edits.",
-        "Keep copy specific, believable, and close to the baseline product.",
+        "Keep copy specific, believable, shopper-oriented, and close to the baseline product.",
       ].join(" "),
     user: JSON.stringify(
       {

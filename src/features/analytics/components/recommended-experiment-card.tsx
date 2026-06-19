@@ -8,6 +8,8 @@ interface RecommendedExperimentCardProps {
 }
 
 function formatTargetArea(area: string): string {
+  if (area === "signup_form") return "Offer form";
+
   return area.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 

@@ -1,26 +1,27 @@
-# Liftpilot
+# StorePilot
 
-A focused exploration of self-improving landing pages.
+StorePilot is an autonomous ecommerce optimization engine. It tracks storefront funnel events, runs product-page variants, measures conversion/revenue, and promotes winning variants.
 
-Liftpilot is a Next.js project that walks a single landing page through one
+StorePilot is a Next.js project that walks a single storefront page through one
 complete optimization loop:
 
 **audit → observe → diagnose → generate → approve → test → deploy**
 
-It is not a production analytics platform, an experimentation framework, or a
-no-code editor. It is the smallest believable version of that loop, built to
-demonstrate clean product thinking and clean full-stack execution.
+It is not a production analytics platform, a generalized experimentation
+framework, or a no-code storefront editor. It is the smallest believable
+version of that loop, built to demonstrate clean product thinking and clean
+full-stack execution.
 
 ---
 
-## What Liftpilot does
+## What StorePilot does
 
-1. **Audit a URL.** Paste a public URL. Liftpilot renders the page with
+1. **Audit a URL.** Paste a public URL. StorePilot renders the page with
    Playwright, captures a screenshot, extracts structured page signals
    (headline, CTA labels, form presence, trust signals, etc.) and runs
    deterministic heuristics to produce a conversion audit with one recommended
    experiment.
-2. **Observe a demo landing page.** A bundled demo landing page is wired up to
+2. **Observe a demo product page.** A bundled demo product page is wired up to
    a lightweight in-app tracker. Sessions, page views, scroll depth, CTA
    clicks, form starts, and form submits are recorded into Postgres.
 3. **Diagnose the funnel.** A small deterministic rule set turns aggregated
@@ -28,7 +29,7 @@ demonstrate clean product thinking and clean full-stack execution.
    form friction, low CTA engagement) with supporting signals and a confidence
    level.
 4. **Generate one variant.** Given the current diagnosis and the persisted
-   baseline content, Liftpilot drafts one improved hero/CTA proposal. If
+   baseline content, StorePilot drafts one improved hero/CTA proposal. If
    `OPENAI_API_KEY` is configured the draft is AI-generated and validated
    against a strict zod schema; otherwise a deterministic fallback produces a
    validated proposal mapped from the known bottleneck.
@@ -40,22 +41,22 @@ demonstrate clean product thinking and clean full-stack execution.
    time. If the recommendation is conclusive, the winning variant content is
    written back into the page baseline and the experiment is completed.
 
-Scope is deliberately small: one site, one page, one primary conversion event,
-one active experiment, one pending variant proposal.
+Scope is deliberately small: one storefront, one product page, one primary
+conversion event, one active experiment, one pending variant proposal.
 
 ---
 
 ## Why this exists
 
-The goal is to show, end-to-end, what a believable self-improving landing page
-loop looks like when:
+The goal is to show, end-to-end, what a believable ecommerce optimization loop
+looks like when:
 
 - the product surface is narrow,
 - AI is used only where it adds real value,
 - and deterministic logic owns anything that affects truth (events, metrics,
   assignment, attribution, deploys).
 
-Liftpilot is a portfolio-style project, not a product launch. Read it as
+StorePilot is a portfolio-style project, not a product launch. Read it as
 evidence of how a small, sharp MVP can be structured around a real product
 loop rather than as a finished commercial offering.
 
@@ -79,7 +80,7 @@ loop rather than as a finished commercial offering.
 src/
   app/                       Next.js App Router routes
     (app)/                   App shell (audit, dashboard, experiments)
-    demo/                    The instrumented demo landing page
+    demo/                    The instrumented demo product page
     api/                     Thin route handlers (audit, events, sessions,
                              variants, experiments)
   components/ui/             Shared shadcn-style primitives
@@ -138,7 +139,7 @@ generator produces a validated proposal mapped from the diagnosed bottleneck.
 The schema is intentionally small. See [`docs/SCHEMA.md`](./docs/SCHEMA.md)
 for the full contract.
 
-- `sites`, `pages` — the tracked site and landing page; `pages.baseline_content`
+- `sites`, `pages` — the tracked storefront and product page; `pages.baseline_content`
   stores the live demo baseline.
 - `audits` — one URL audit run with extracted signals, findings, and a
   recommended experiment.
@@ -210,7 +211,7 @@ Then open:
 
 - `http://localhost:3000` — landing
 - `http://localhost:3000/audit` — URL audit
-- `http://localhost:3000/demo` — the instrumented demo landing page
+- `http://localhost:3000/demo` — the instrumented demo product page
 - `http://localhost:3000/dashboard` — metrics + diagnosis + variant proposal
 - `http://localhost:3000/experiments` — running experiment + results + deploy
 
@@ -266,8 +267,8 @@ In order of likely value:
 - **Real statistical rigor.** Confidence intervals, minimum sample size
   guards, and a clear "not enough data" state instead of a binary winner
   rule.
-- **External snippet.** A small standalone `<script>` SDK so any site can
-  install Liftpilot without integrating React.
+- **External snippet.** A small standalone `<script>` SDK so any storefront can
+  install StorePilot without integrating React.
 - **Multi-tenant + auth.** Sites, pages, members, API keys, billing.
 - **Background jobs.** Move audit capture and AI calls off the request path
   (Inngest, Trigger.dev, or a queue).
@@ -280,7 +281,7 @@ In order of likely value:
 - **CMS integrations.** Push approved baselines into the host CMS instead of
   storing them in `pages.baseline_content`.
 - **Observability.** Structured logs, error tracking, and product analytics
-  on Liftpilot itself.
+  on StorePilot itself.
 
 ---
 
@@ -300,7 +301,6 @@ In order of likely value:
 
 ## Status
 
-Liftpilot is a focused exploration, not a production-ready product. The loop
-is end-to-end, the code is meant to be readable, and the simplifications are
-intentional and documented.
-# storepilot
+StorePilot is a focused ecommerce optimization MVP, not a production-ready
+product. The loop is end-to-end, the code is meant to be readable, and the
+simplifications are intentional and documented.

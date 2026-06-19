@@ -1,13 +1,13 @@
-# Liftpilot Schema
+# StorePilot Schema
 
 This schema is intentionally small. It models the MVP loop without turning
-Liftpilot into a generic analytics or experimentation platform.
+StorePilot into a generic analytics or experimentation platform.
 
 ## Core Tables
 
-- `sites`: the tracked website container. Stores a display name, canonical URL,
+- `sites`: the tracked storefront container. Stores a display name, canonical URL,
   and timestamps.
-- `pages`: the landing page being optimized. Stores the owning site, page URL,
+- `pages`: the product page being optimized. Stores the owning storefront, page URL,
   optional title, primary conversion event, and the current persisted baseline
   content used by the demo page.
 - `audits`: a URL audit run for a page. Stores audit status, screenshot URL,

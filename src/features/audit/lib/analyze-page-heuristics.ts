@@ -138,7 +138,7 @@ function detectHeuristicIssues(signals: PageSignals): AuditIssue[] {
       category: "layout",
       description: `The page exposes ${signals.navLinkCount} navigation links and ${signals.ctaLabels.length} CTA-like labels.`,
       conversionImpact:
-        "Extra choices split attention. Focused landing pages usually make one next action more visually and verbally dominant.",
+        "Extra choices split attention. Focused storefront pages usually make one next action more visually and verbally dominant.",
     });
   }
 

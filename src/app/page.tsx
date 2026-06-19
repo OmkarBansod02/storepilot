@@ -39,7 +39,7 @@ const loopSteps = [
   {
     number: "04",
     label: "Generate",
-    description: "Draft one improved page variant.",
+    description: "Draft one improved product-page variant.",
     icon: Sparkles,
   },
   {
@@ -82,7 +82,7 @@ const entryPoints = [
     eyebrow: "See it live",
     title: "Visit the demo page",
     description:
-      "A realistic tracked landing page. Your interactions are recorded and feed straight into the dashboard.",
+      "A realistic tracked product page. Your interactions are recorded and feed straight into the dashboard.",
     href: "/demo",
     cta: "Open demo page",
     icon: Eye,
@@ -108,7 +108,7 @@ export default function HomePage() {
             className="size-2.5 rounded-full bg-primary shadow-[0_0_0_4px_var(--accent),0_0_8px_rgba(200,90,40,0.15)]"
           />
           <span className="text-base font-semibold tracking-tight">
-            Liftpilot
+            StorePilot
           </span>
         </Link>
         <nav className="flex items-center gap-1">
@@ -149,17 +149,17 @@ export default function HomePage() {
                 className="h-7 rounded-full border-border/80 bg-card/90 px-3 text-[12px] font-medium text-muted-foreground shadow-card backdrop-blur"
               >
                 <CircleDot className="size-3 text-primary" />
-                Self-improving landing pages
+                Ecommerce optimization engine
               </Badge>
 
               <h1 className="mt-6 font-heading text-[44px] leading-[1.05] font-bold tracking-tight text-foreground sm:text-[60px]">
-                Landing pages that{" "}
-                <span className="text-primary">improve themselves.</span>
+                Product pages that{" "}
+                <span className="text-primary">keep getting sharper.</span>
               </h1>
 
               <p className="mx-auto mt-6 max-w-xl text-[16px] leading-relaxed text-muted-foreground sm:text-[17px]">
-                Liftpilot audits your page, watches real visitor behavior,
-                and turns it into one approved experiment — then ships the
+                StorePilot tracks storefront behavior, drafts one approved
+                product-page experiment, measures conversion, and promotes the
                 winner.
               </p>
 
@@ -186,7 +186,7 @@ export default function HomePage() {
               </div>
 
               <p className="mt-5 text-[13px] text-muted-foreground/80">
-                No signup · Free to try · ~30s to your first audit
+                No account needed · Free to try · ~30s to your first audit
               </p>
             </div>
 
@@ -221,7 +221,7 @@ export default function HomePage() {
               </Badge>
               <h2 className="mt-5 font-heading text-[32px] font-bold tracking-tight sm:text-[40px]">
                 One feedback loop.
-                <span className="text-muted-foreground"> Repeated until your page wins.</span>
+                <span className="text-muted-foreground"> Repeated until the storefront wins.</span>
               </h2>
               <p className="mt-4 text-[15px] leading-relaxed text-muted-foreground sm:text-base">
                 A clear, measurable, human-approved cycle. Behavior becomes a
@@ -290,7 +290,7 @@ export default function HomePage() {
               Three ways to see the loop in motion.
             </h2>
             <p className="mt-4 text-[15px] leading-relaxed text-muted-foreground sm:text-base">
-              Start with an audit, watch the demo page collect real behavior,
+              Start with an audit, watch the demo product page collect real behavior,
               then approve and ship a variant.
             </p>
           </div>
@@ -336,12 +336,12 @@ export default function HomePage() {
                   className="size-2.5 rounded-full bg-primary shadow-[0_0_0_4px_var(--accent)]"
                 />
                 <span className="text-base font-semibold tracking-tight">
-                  Liftpilot
+                  StorePilot
                 </span>
               </Link>
               <p className="mt-4 max-w-xs text-[13.5px] leading-relaxed text-muted-foreground">
-                A narrow, founder-ready wedge for self-improving landing
-                pages.
+                A narrow, founder-ready wedge for autonomous ecommerce
+                optimization.
               </p>
             </div>
 
@@ -400,8 +400,8 @@ export default function HomePage() {
           </div>
 
           <div className="mt-12 flex flex-col items-center justify-between gap-2 border-t border-border/60 pt-7 text-[12.5px] text-muted-foreground sm:flex-row">
-            <span>&copy; {new Date().getFullYear()} Liftpilot</span>
-            <span>Self-improving landing pages.</span>
+            <span>&copy; {new Date().getFullYear()} StorePilot</span>
+            <span>Autonomous ecommerce optimization.</span>
           </div>
         </div>
       </footer>

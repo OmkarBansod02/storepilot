@@ -24,7 +24,7 @@ export async function capturePageForAudit(url: string): Promise<CapturedPage> {
       viewport: { width: 1440, height: 1200 },
       userAgent:
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
-        "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 LiftpilotAudit/1.0",
+        "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 StorePilotAudit/1.0",
     });
 
     const response = await page.goto(safeUrl, {
@@ -53,7 +53,7 @@ export async function capturePageForAudit(url: string): Promise<CapturedPage> {
         timeout: AUDIT_IDLE_TIMEOUT_MS,
       });
     } catch {
-      // Network idle is helpful but not required; many landing pages keep analytics connections open.
+      // Network idle is helpful but not required; many storefront pages keep analytics connections open.
     }
 
     const screenshot = await page.screenshot({

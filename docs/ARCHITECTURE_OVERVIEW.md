@@ -1,6 +1,6 @@
 # Architecture Overview
 
-A short, founder-friendly view of how Liftpilot is put together. For the full
+A short, founder-friendly view of how StorePilot is put together. For the full
 engineering guide, see [`ARCHITECTURE.md`](../ARCHITECTURE.md). For the
 database contract, see [`SCHEMA.md`](./SCHEMA.md).
 
@@ -8,9 +8,9 @@ database contract, see [`SCHEMA.md`](./SCHEMA.md).
 
 ## Shape of the system
 
-Liftpilot is a single Next.js (App Router) application backed by Postgres.
+StorePilot is a single Next.js (App Router) application backed by Postgres.
 
-- The frontend renders the audit, dashboard, experiment, and demo landing
+- The frontend renders the audit, dashboard, experiment, and demo product-page
   surfaces.
 - API route handlers are thin: validate input, call a feature server
   function, return a typed result.
@@ -45,7 +45,7 @@ and traceable.
 src/
   app/
     (app)/        App shell: /audit, /dashboard, /experiments
-    demo/         Instrumented demo landing page
+    demo/         Instrumented demo product page
     api/          Route handlers (thin)
   components/
     ui/           Shared shadcn-style primitives
@@ -137,7 +137,7 @@ loop works end-to-end with no AI key at all.
 The schema is small on purpose. See [`SCHEMA.md`](./SCHEMA.md) for the full
 contract.
 
-- `sites`, `pages` — the tracked site and landing page. `pages.baseline_content`
+- `sites`, `pages` — the tracked storefront and product page. `pages.baseline_content`
   is the live demo baseline copy.
 - `audits` — one URL audit per row with extracted signals, findings, and a
   recommended experiment.

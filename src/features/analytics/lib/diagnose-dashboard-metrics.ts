@@ -37,7 +37,7 @@ function buildCoreSignals(metrics: DiagnosisMetricInput): DiagnosisSignal[] {
     {
       label: "Sessions",
       value: metrics.totalSessions.toLocaleString(),
-      description: "Anonymous sessions tracked for this landing page.",
+      description: "Anonymous sessions tracked for this storefront page.",
     },
     {
       label: "CTA click-through",
@@ -102,7 +102,7 @@ export function diagnoseDashboardMetrics(
       primaryBottleneck: "insufficient_data",
       title: "Not enough behavior data yet",
       summary:
-        "Liftpilot needs a small baseline before calling a bottleneck. Keep collecting sessions until the dashboard has at least 5 sessions and 10 page views.",
+        "StorePilot needs a small baseline before calling a bottleneck. Keep collecting sessions until the dashboard has at least 5 sessions and 10 page views.",
       confidence: "low",
       recommendedExperiment: {
         title: "Collect a clean baseline",
@@ -140,7 +140,7 @@ export function diagnoseDashboardMetrics(
         title: "Reduce form effort",
         description:
           "Test a shorter form, clearer field labels, and reassurance near the submit button.",
-        targetArea: "Signup form",
+        targetArea: "Offer form",
         expectedImpact:
           "Improve completion from visitors who already show intent.",
       },
@@ -242,7 +242,7 @@ export function diagnoseDashboardMetrics(
         "Visitors are engaging with the page, but that interest is not turning into enough completed forms. The next test should connect the page promise more directly to the conversion step.",
       confidence,
       recommendedExperiment: {
-        title: "Align proof and CTA with the signup step",
+        title: "Align proof and CTA with the conversion step",
         description:
           "Test stronger proof, clearer next-step expectations, and CTA copy that reduces uncertainty before the form.",
         targetArea: "Mid-page proof and CTA path",

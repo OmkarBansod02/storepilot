@@ -8,7 +8,7 @@ export function DemoFeatures() {
     <section className="border-t border-border/60 bg-surface-muted">
       <div className="mx-auto max-w-5xl px-6 py-28">
         <h2 className="text-center text-[28px] font-bold tracking-tight sm:text-[36px]">
-          Everything you need to launch and learn
+          Built for quick trips and everyday carry
         </h2>
         <div className="mt-16 grid gap-6 sm:grid-cols-3">
           {demoContent.features.map((feature, i) => {

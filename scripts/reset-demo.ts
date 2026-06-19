@@ -3,9 +3,9 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import postgres from "postgres";
 
-const DEMO_SITE_NAME = "Liftpilot Demo";
+const DEMO_SITE_NAME = "StorePilot Demo";
 const DEMO_SITE_URL = "http://localhost:3000/demo";
-const DEMO_PAGE_TITLE = "Acme Launch - Demo Landing Page";
+const DEMO_PAGE_TITLE = "Northstar Pack - Demo Product Page";
 const PRIMARY_CONVERSION_EVENT = "form_submit";
 
 interface DemoContent {

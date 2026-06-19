@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Acme Launch — Ship faster. Convert better.",
+  title: "Northstar Pack - Carry less. Move faster.",
   description:
-    "The launch platform that grows with your product. Built-in analytics, A/B testing, and smart defaults.",
+    "A compact, weather-ready daypack for commutes, weekend trips, and fast-moving city escapes.",
 };
 
 export default function DemoLayout({

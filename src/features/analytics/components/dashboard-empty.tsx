@@ -11,8 +11,8 @@ export function DashboardEmpty() {
       </div>
       <h3 className="mt-6 text-lg font-bold tracking-tight">Waiting for traffic</h3>
       <p className="mt-3 max-w-md text-[14px] leading-relaxed text-muted-foreground">
-        Liftpilot will start surfacing diagnosis, recommendations, and a
-        proposed variant as soon as your demo landing page records its first
+        StorePilot will start surfacing diagnosis, recommendations, and a
+        proposed variant as soon as your demo product page records its first
         sessions.
       </p>
       <div className="mt-7 space-y-2 text-[13px] text-muted-foreground">

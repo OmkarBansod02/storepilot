@@ -16,7 +16,7 @@ export function NextStepsPanel() {
               Validate with real traffic
             </h3>
             <p className="text-[13px] leading-relaxed text-muted-foreground">
-              Connect the Liftpilot snippet to your page to collect visitor
+              Connect the StorePilot snippet to your page to collect visitor
               behavior and confirm these findings with real signals.
             </p>
           </div>

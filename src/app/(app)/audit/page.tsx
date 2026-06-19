@@ -23,7 +23,7 @@ export default function AuditPage() {
       <PageContainer>
         <PageHeader
           title="URL Audit"
-          description="Paste any public landing page. Get a fast, structured conversion audit — and one experiment to run next."
+          description="Paste any public storefront or product page. Get a fast, structured conversion audit — and one experiment to run next."
         >
           <Badge
             variant="secondary"

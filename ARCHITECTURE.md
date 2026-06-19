@@ -1,10 +1,10 @@
 # ARCHITECTURE.md
 
-# Liftpilot  — Architecture Guide
+# StorePilot — Architecture Guide
 
 ## Purpose
 
-This document defines the engineering architecture for Liftpilot .
+This document defines the engineering architecture for StorePilot.
 
 It is the technical source of truth for:
 - folder structure
@@ -14,7 +14,7 @@ It is the technical source of truth for:
 - coding patterns
 - what we are intentionally not abstracting yet
 
-This project is a **Sherpa-inspired MVP**, not a generalized experimentation platform.
+This project is an **ecommerce optimization MVP**, not a generalized experimentation platform.
 
 The architecture should optimize for:
 - speed of development
@@ -28,7 +28,7 @@ The architecture should optimize for:
 
 ## Core product shape
 
-Liftpilot  has two main surfaces:
+StorePilot has two main surfaces:
 
 1. **URL Audit**
    - user pastes a public website URL
@@ -37,7 +37,7 @@ Liftpilot  has two main surfaces:
    - system recommends one experiment
 
 2. **Snippet-powered Optimizer**
-   - user installs a lightweight snippet on a landing page
+   - user installs a lightweight snippet on a product page
    - system collects key behavior events
    - system diagnoses likely friction
    - system generates one improved variant
@@ -46,7 +46,7 @@ Liftpilot  has two main surfaces:
    - user deploys the winner
 
 This MVP supports:
-- one landing page
+- one product page
 - one primary conversion metric
 - one active experiment at a time
 

@@ -1,6 +1,6 @@
 # Demo Flow
 
-A step-by-step walkthrough of the full Liftpilot loop on a local machine. The
+A step-by-step walkthrough of the full StorePilot loop on a local machine. The
 goal is for someone unfamiliar with the project to start from a clean state
 and exercise every stage — audit, observe, diagnose, generate, approve, test,
 deploy — in roughly five to ten minutes.
@@ -33,8 +33,7 @@ You should now have:
 ## 1. Audit a URL
 
 1. Open `http://localhost:3000/audit`.
-2. Paste any public URL (a landing page works best — try a real product home
-   page).
+2. Paste any public URL (a product page works best).
 3. Submit.
 
 What happens behind the scenes:
@@ -66,13 +65,13 @@ What you should see:
 ## 2. Generate traffic on the demo page
 
 The audit surface is the cold-start hook. The richer loop runs against the
-bundled instrumented landing page at `/demo`.
+bundled instrumented product page at `/demo`.
 
 1. Open `http://localhost:3000/demo` in a regular browser window.
 2. Scroll to the bottom of the page.
 3. Click the primary CTA in the hero.
-4. Click the **Get started** button in the header.
-5. Fill in the signup form (any values) and submit.
+4. Click the primary CTA button in the header.
+5. Fill in the offer form (any values) and submit.
 6. Open `http://localhost:3000/demo` in an incognito window and repeat. In
    development you can also reuse the same window and append
    `?freshSession=1` to force a new anonymous ID.

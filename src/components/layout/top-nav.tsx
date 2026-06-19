@@ -23,7 +23,7 @@ export function TopNav() {
             className="size-2.5 rounded-full bg-primary shadow-[0_0_0_4px_var(--accent),0_0_8px_rgba(200,90,40,0.15)]"
           />
           <span className="text-base font-semibold tracking-tight">
-            Liftpilot
+            StorePilot
           </span>
         </Link>
 

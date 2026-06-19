@@ -57,7 +57,7 @@ export function DemoSignupForm({ ctaLabel }: DemoSignupFormProps) {
           <form onSubmit={handleSubmit} className="mt-12 flex gap-3">
             <Input
               type="email"
-              placeholder="you@company.com"
+              placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               onFocus={handleFocus}

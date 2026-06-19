@@ -6,7 +6,7 @@
 ```md
 # AGENTS.md
 
-# Liftpilot  — Agent Working Rules
+# StorePilot — Agent Working Rules
 
 ## Purpose
 
@@ -26,7 +26,7 @@ If there is a conflict:
 
 ## Project mission
 
-Liftpilot  is a Sherpa-inspired MVP for self-improving landing pages.
+StorePilot is an ecommerce optimization MVP for self-improving storefront pages.
 
 The MVP supports:
 - URL conversion audit
@@ -51,7 +51,7 @@ Do not turn this into:
 
 Agents must respect these constraints at all times:
 
-- one landing page
+- one product page
 - one primary conversion event
 - one active experiment at a time
 - deterministic product logic by default

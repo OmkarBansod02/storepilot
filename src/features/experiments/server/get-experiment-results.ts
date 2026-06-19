@@ -7,6 +7,7 @@ import {
 } from "@/features/experiments/lib/calculate-experiment-results";
 import type { ExperimentArm, ExperimentStatus } from "@/features/experiments/types";
 import { mapVariantRow } from "@/features/variants/lib/map-variant-row";
+import type { VariantStatus } from "@/features/variants/types";
 import { db } from "@/lib/db";
 import { conversions, experiments, sessions, variants } from "@/lib/db/schema";
 import { and, countDistinct, desc, eq } from "drizzle-orm";
@@ -20,6 +21,7 @@ export interface ExperimentResultSummary {
   variantHeadline: string;
   variantCtaLabel: string;
   variantTargetArea: string;
+  variantStatus: VariantStatus;
   startedAt: Date | null;
   completedAt: Date | null;
   arms: Record<ExperimentArm, ExperimentArmResult>;
@@ -101,6 +103,7 @@ export async function getExperimentResults(
     variantHeadline: variant.headline,
     variantCtaLabel: variant.primaryCtaLabel,
     variantTargetArea: variant.targetArea,
+    variantStatus: variant.status,
     startedAt: row.experiment.startedAt,
     completedAt: row.experiment.completedAt,
     ...results,

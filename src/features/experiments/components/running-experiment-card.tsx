@@ -52,7 +52,7 @@ function formatRecommendedAction(
   action: RunningExperimentSummary["recommendedAction"],
 ): string {
   if (action === "promote_winner") return "Promote winner";
-  if (action === "needs_more_data") return "Needs more data";
+  if (action === "needs_more_data") return "Keep collecting data";
   return "Keep running";
 }
 
@@ -115,8 +115,8 @@ function getBayesianCopy(
 
   if (experiment.recommendedAction === "needs_more_data") {
     return {
-      label: "Needs more data",
-      caption: `${totalVisitors}/${BAYESIAN_MIN_TOTAL_VISITORS} visitors and ${totalPurchases}/${BAYESIAN_MIN_TOTAL_PURCHASES} purchases collected.`,
+      label: "Needs more data before promotion",
+      caption: `${totalVisitors}/${BAYESIAN_MIN_TOTAL_VISITORS} visitors and ${totalPurchases}/${BAYESIAN_MIN_TOTAL_PURCHASES} purchases collected. Promotion is locked until thresholds are met.`,
     };
   }
 
@@ -278,7 +278,7 @@ export function RunningExperimentCard({
           <div className="mt-4 grid gap-4 border-t pt-4 sm:grid-cols-2">
             <div>
               <p className="text-xs font-medium text-muted-foreground">
-                Raw relative lift
+                Observed relative lift
               </p>
               <p
                 className={cn(
@@ -291,7 +291,7 @@ export function RunningExperimentCard({
             </div>
             <div>
               <p className="text-xs font-medium text-muted-foreground">
-                Raw absolute change
+                Observed absolute change
               </p>
               <p className="mt-1 text-2xl font-bold tabular-nums">
                 {formatSignedPercentagePoints(
@@ -302,8 +302,9 @@ export function RunningExperimentCard({
           </div>
 
           <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground/70">
-            Probability uses a Beta(1, 1) prior and 25,000 stable Monte Carlo
-            samples. Lift remains the observed purchase conversion difference.
+            Probability uses a Beta(1, 1) prior with 25,000 Monte Carlo
+            samples. Promotion requires both high confidence and minimum
+            visitor/purchase thresholds.
           </p>
         </div>
 

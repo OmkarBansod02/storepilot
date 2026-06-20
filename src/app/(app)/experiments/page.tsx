@@ -21,11 +21,11 @@ import { getLatestPageExperiment } from "@/features/experiments/server/get-runni
 export const dynamic = "force-dynamic";
 
 const FLOW_STEPS = [
-  "System diagnoses a conversion bottleneck on the product page",
-  "One improved variant is generated (hero, add-to-cart, offer, trust proof)",
-  "You review and approve the change",
-  "Traffic is split 50/50 — funnel metrics tracked per variant",
-  "The variant is promoted or the control is retained",
+  "System diagnoses a conversion bottleneck",
+  "One variant is generated (hero, CTA, offer, trust)",
+  "You review and approve",
+  "Traffic splits 50/50 — funnel tracked per arm",
+  "Winner promoted or control retained",
 ] as const;
 
 interface LabExperiment {
@@ -156,9 +156,8 @@ function EmptyExperimentState() {
             No active experiment
           </h3>
           <p className="mt-3 max-w-sm text-[14px] leading-relaxed text-muted-foreground">
-            Experiments start here once a variant is approved from the
-            dashboard. The system splits traffic, tracks the ecommerce funnel,
-            and recommends a winner.
+            Approve a variant from the dashboard to start. Traffic splits
+            automatically and Bayesian confidence determines the winner.
           </p>
           <Button variant="outline" className="mt-7" asChild>
             <Link href="/dashboard">

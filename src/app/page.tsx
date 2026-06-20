@@ -75,7 +75,7 @@ const entryPoints = [
     eyebrow: "Browse",
     title: "Demo Store",
     description:
-      "A realistic tracked product page. Every product view, add-to-cart, and purchase is recorded and feeds straight into the dashboard.",
+      "Tracked product page. Every view, add-to-cart, and purchase feeds into the dashboard.",
     href: "/demo",
     cta: "Open demo store",
     icon: ShoppingBag,
@@ -84,7 +84,7 @@ const entryPoints = [
     eyebrow: "Monitor",
     title: "Dashboard",
     description:
-      "See sessions, funnel conversion, revenue, AOV, and revenue per visitor. Get a diagnosis and a proposed variant when enough data arrives.",
+      "Funnel conversion, revenue, AOV, revenue per visitor, and traffic simulator in one view.",
     href: "/dashboard",
     cta: "View dashboard",
     icon: BarChart3,
@@ -93,7 +93,7 @@ const entryPoints = [
     eyebrow: "Test",
     title: "Experiment Lab",
     description:
-      "Run a 50/50 split test on your product page variant. Track Bayesian winner confidence and promote the best performer.",
+      "50/50 split test with Bayesian winner confidence. Promote the best variant when ready.",
     href: "/experiments",
     cta: "Open experiment lab",
     icon: FlaskConical,
@@ -102,7 +102,7 @@ const entryPoints = [
     eyebrow: "Audit",
     title: "Storefront Audit",
     description:
-      "Paste any public product page URL. Get a fast, structured conversion audit with prioritized issues and one recommended experiment.",
+      "Paste a product page URL. Get prioritized conversion issues and one recommended experiment.",
     href: "/audit",
     cta: "Run an audit",
     icon: Search,
@@ -172,10 +172,9 @@ export default function HomePage() {
               </h1>
 
               <p className="mx-auto mt-6 max-w-xl text-[16px] leading-relaxed text-muted-foreground sm:text-[17px]">
-                StorePilot tracks your product-page funnel — product views,
-                add-to-cart, checkout, and purchase — tests one approved
-                variant, measures revenue and Bayesian winner confidence, and
-                promotes the best performer.
+                StorePilot tracks ecommerce funnel events, tests product-page
+                variants, and promotes the winner when Bayesian confidence is
+                high enough.
               </p>
 
               <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -239,9 +238,8 @@ export default function HomePage() {
                 <span className="text-muted-foreground"> Repeated until the storefront wins.</span>
               </h2>
               <p className="mt-4 text-[15px] leading-relaxed text-muted-foreground sm:text-base">
-                A clear, measurable, human-approved cycle. Behavior becomes a
-                hypothesis. A hypothesis becomes a test. A test becomes a
-                winner.
+                Behavior → hypothesis → test → winner. Each cycle is
+                human-approved and measurable.
               </p>
             </div>
 
@@ -355,8 +353,7 @@ export default function HomePage() {
                 </span>
               </Link>
               <p className="mt-4 max-w-xs text-[13.5px] leading-relaxed text-muted-foreground">
-                A narrow, founder-ready wedge for autonomous ecommerce
-                optimization.
+                Self-improving ecommerce storefront engine.
               </p>
             </div>
 

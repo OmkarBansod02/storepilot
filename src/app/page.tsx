@@ -103,15 +103,15 @@ export default function HomePage() {
         <section className="relative overflow-hidden">
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[600px] bg-[radial-gradient(65%_55%_at_50%_0%,var(--accent)_0%,transparent_75%)] opacity-90"
+            className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[520px] bg-[radial-gradient(60%_50%_at_50%_0%,var(--accent)_0%,transparent_72%)] opacity-85"
           />
           <div
             aria-hidden
             className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-px bg-gradient-to-r from-transparent via-border to-transparent"
           />
 
-          <div className="mx-auto max-w-6xl px-6 pt-24 pb-28 sm:pt-32 sm:pb-36">
-            <div className="mx-auto max-w-2xl text-center">
+          <div className="mx-auto max-w-6xl px-6 pt-16 pb-20 sm:pt-22 sm:pb-24">
+            <div className="mx-auto max-w-[40rem] text-center">
               <Badge
                 variant="secondary"
                 className="h-7 rounded-full border-border/80 bg-card/90 px-3 text-[12px] font-medium text-muted-foreground shadow-card backdrop-blur"
@@ -120,55 +120,52 @@ export default function HomePage() {
                 Ecommerce optimization engine
               </Badge>
 
-              <h1 className="mt-6 font-heading text-[44px] leading-[1.05] font-bold tracking-tight text-foreground sm:text-[60px]">
+              <h1 className="mt-5 font-heading text-[40px] leading-[1.08] font-bold tracking-tight text-foreground sm:text-[56px] sm:leading-[1.05]">
                 Product pages that{" "}
                 <span className="text-primary">keep getting sharper.</span>
               </h1>
 
-              <p className="mx-auto mt-6 max-w-xl text-[16px] leading-relaxed text-muted-foreground sm:text-[17px]">
-                StorePilot tracks ecommerce funnel events, tests product-page
-                variants, and promotes the winner when Bayesian confidence is
-                high enough.
+              <p className="mx-auto mt-5 max-w-lg text-[15px] leading-[1.7] text-muted-foreground sm:text-[16px]">
+                Track funnel events, test product-page variants, and promote the
+                winner when Bayesian confidence is high enough.
               </p>
 
-              <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
                 <Button
                   size="lg"
-                  className="h-12 px-6 text-[15px] shadow-primary-glow"
+                  className="h-11 px-6 text-[14px] font-semibold shadow-primary-glow"
                   asChild
                 >
                   <Link href="/demo">
                     <ShoppingBag className="size-4" />
                     Open Demo Store
-                    <ArrowRight className="size-4" />
+                    <ArrowRight className="size-3.5" />
                   </Link>
                 </Button>
                 <Button
                   variant="outline"
                   size="lg"
-                  className="h-12 px-5 text-[15px]"
+                  className="h-11 px-5 text-[14px] font-medium"
                   asChild
                 >
-                  <Link href="/dashboard">View live funnel</Link>
+                  <Link href="/dashboard">View Dashboard</Link>
                 </Button>
               </div>
 
-              <p className="mt-5 text-[13px] text-muted-foreground/80">
-                No account needed · Free to try · Simulated traffic in one click
+              <p className="mt-4 text-[12.5px] text-muted-foreground/70">
+                No account needed · Simulated traffic in one click
               </p>
             </div>
 
             {/* Principles strip */}
-            <div className="mx-auto mt-16 flex max-w-3xl flex-wrap items-center justify-center gap-x-10 gap-y-4">
+            <div className="mx-auto mt-12 flex max-w-md items-center justify-center gap-6 rounded-xl border border-border/60 bg-card/80 px-6 py-3.5 shadow-card backdrop-blur sm:max-w-lg sm:gap-8">
               {principles.map((p) => (
                 <div
                   key={p.label}
-                  className="flex items-center gap-2.5 text-[13.5px]"
+                  className="flex items-center gap-2 text-[12.5px] sm:text-[13px]"
                 >
-                  <span className="flex size-7 items-center justify-center rounded-full border border-border/80 bg-card text-primary shadow-card">
-                    <p.icon className="size-3.5" />
-                  </span>
-                  <span className="font-medium text-foreground/80">
+                  <p.icon className="size-3.5 shrink-0 text-primary" />
+                  <span className="font-medium text-foreground/80 whitespace-nowrap">
                     {p.label}
                   </span>
                 </div>

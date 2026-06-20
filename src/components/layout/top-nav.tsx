@@ -5,10 +5,10 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { label: "Audit", href: "/audit" },
+  { label: "Demo Store", href: "/demo" },
   { label: "Dashboard", href: "/dashboard" },
-  { label: "Demo Page", href: "/demo" },
-  { label: "Experiments", href: "/experiments" },
+  { label: "Experiment Lab", href: "/experiments" },
+  { label: "Storefront Audit", href: "/audit" },
 ] as const;
 
 export function TopNav() {

@@ -92,7 +92,7 @@ export function AuditSummaryCard({ result }: AuditSummaryCardProps) {
               Conversion score
             </p>
             <p className="text-[12px] leading-relaxed text-muted-foreground">
-              Heuristic + AI-weighted snapshot of conversion readiness.
+              Heuristic snapshot of storefront conversion readiness.
             </p>
           </div>
         </div>

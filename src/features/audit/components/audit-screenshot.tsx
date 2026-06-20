@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Lock, Monitor } from "lucide-react";
 
 interface AuditScreenshotProps {
@@ -31,9 +32,12 @@ export function AuditScreenshot({ screenshotUrl, url }: AuditScreenshotProps) {
       </div>
 
       {screenshotUrl ? (
-        <img
+        <Image
           src={screenshotUrl}
           alt={`Screenshot of ${url}`}
+          width={960}
+          height={600}
+          unoptimized
           className="aspect-[16/10] w-full object-cover object-top"
         />
       ) : (

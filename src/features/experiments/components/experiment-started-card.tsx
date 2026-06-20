@@ -29,7 +29,7 @@ export function ExperimentStartedCard({
             <div>
               <CardTitle className="text-[16px] font-bold tracking-tight">Experiment started</CardTitle>
               <CardDescription className="mt-1">
-                Your A/B test is now live on the demo page.
+                Your A/B test is now live on the demo store.
               </CardDescription>
             </div>
           </div>

@@ -13,6 +13,8 @@ import {
   Rocket,
   RotateCw,
   CircleDot,
+  BarChart3,
+  ShoppingBag,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -70,31 +72,40 @@ const principles = [
 
 const entryPoints = [
   {
-    eyebrow: "Step 1",
-    title: "Run a URL audit",
+    eyebrow: "Browse",
+    title: "Demo Store",
     description:
-      "Paste a public URL. Get a fast conversion audit with prioritized issues and one recommended experiment.",
-    href: "/audit",
-    cta: "Start an audit",
-    icon: Search,
-  },
-  {
-    eyebrow: "See it live",
-    title: "Visit the demo page",
-    description:
-      "A realistic tracked product page. Your interactions are recorded and feed straight into the dashboard.",
+      "A realistic tracked product page. Every product view, add-to-cart, and purchase is recorded and feeds straight into the dashboard.",
     href: "/demo",
-    cta: "Open demo page",
-    icon: Eye,
+    cta: "Open demo store",
+    icon: ShoppingBag,
   },
   {
-    eyebrow: "Step 2",
-    title: "Generate & test a variant",
+    eyebrow: "Monitor",
+    title: "Dashboard",
     description:
-      "Review behavior, approve a generated variant, run a clean A/B test, and deploy the winner.",
+      "See sessions, funnel conversion, revenue, AOV, and revenue per visitor. Get a diagnosis and a proposed variant when enough data arrives.",
+    href: "/dashboard",
+    cta: "View dashboard",
+    icon: BarChart3,
+  },
+  {
+    eyebrow: "Test",
+    title: "Experiment Lab",
+    description:
+      "Run a 50/50 split test on your product page variant. Track Bayesian winner confidence and promote the best performer.",
     href: "/experiments",
-    cta: "View experiments",
+    cta: "Open experiment lab",
     icon: FlaskConical,
+  },
+  {
+    eyebrow: "Audit",
+    title: "Storefront Audit",
+    description:
+      "Paste any public product page URL. Get a fast, structured conversion audit with prioritized issues and one recommended experiment.",
+    href: "/audit",
+    cta: "Run an audit",
+    icon: Search,
   },
 ] as const;
 
@@ -113,17 +124,20 @@ export default function HomePage() {
         </Link>
         <nav className="flex items-center gap-1">
           <Button variant="ghost" size="sm" asChild>
-            <Link href="/audit">Audit</Link>
+            <Link href="/demo">Demo Store</Link>
           </Button>
           <Button variant="ghost" size="sm" asChild>
             <Link href="/dashboard">Dashboard</Link>
           </Button>
           <Button variant="ghost" size="sm" asChild>
-            <Link href="/experiments">Experiments</Link>
+            <Link href="/experiments">Experiment Lab</Link>
+          </Button>
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/audit">Storefront Audit</Link>
           </Button>
           <Button size="sm" className="ml-2" asChild>
-            <Link href="/audit">
-              Run audit
+            <Link href="/demo">
+              Try the demo
               <ArrowRight className="size-3.5" />
             </Link>
           </Button>
@@ -158,9 +172,10 @@ export default function HomePage() {
               </h1>
 
               <p className="mx-auto mt-6 max-w-xl text-[16px] leading-relaxed text-muted-foreground sm:text-[17px]">
-                StorePilot tracks storefront behavior, drafts one approved
-                product-page experiment, measures conversion, and promotes the
-                winner.
+                StorePilot tracks your product-page funnel — product views,
+                add-to-cart, checkout, and purchase — tests one approved
+                variant, measures revenue and Bayesian winner confidence, and
+                promotes the best performer.
               </p>
 
               <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -169,9 +184,9 @@ export default function HomePage() {
                   className="h-12 px-6 text-[15px] shadow-primary-glow"
                   asChild
                 >
-                  <Link href="/audit">
-                    <Search className="size-4" />
-                    Run an Audit
+                  <Link href="/demo">
+                    <ShoppingBag className="size-4" />
+                    Open Demo Store
                     <ArrowRight className="size-4" />
                   </Link>
                 </Button>
@@ -181,12 +196,12 @@ export default function HomePage() {
                   className="h-12 px-5 text-[15px]"
                   asChild
                 >
-                  <Link href="/demo">See the live demo</Link>
+                  <Link href="/audit">Run a Storefront Audit</Link>
                 </Button>
               </div>
 
               <p className="mt-5 text-[13px] text-muted-foreground/80">
-                No account needed · Free to try · ~30s to your first audit
+                No account needed · Free to try · Simulated traffic in one click
               </p>
             </div>
 
@@ -287,15 +302,15 @@ export default function HomePage() {
               Get started
             </Badge>
             <h2 className="mt-5 font-heading text-[32px] font-bold tracking-tight sm:text-[40px]">
-              Three ways to see the loop in motion.
+              Four ways into the loop.
             </h2>
             <p className="mt-4 text-[15px] leading-relaxed text-muted-foreground sm:text-base">
-              Start with an audit, watch the demo product page collect real behavior,
-              then approve and ship a variant.
+              Browse the demo store, monitor funnel metrics, run a split test,
+              or audit any product page for conversion friction.
             </p>
           </div>
 
-          <div className="mx-auto mt-14 grid max-w-5xl gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mx-auto mt-14 grid max-w-5xl gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {entryPoints.map((entry) => (
               <Link
                 key={entry.href}
@@ -352,10 +367,10 @@ export default function HomePage() {
               <ul className="mt-4 space-y-2.5 text-[13.5px]">
                 <li>
                   <Link
-                    href="/audit"
+                    href="/demo"
                     className="text-muted-foreground transition-colors hover:text-foreground"
                   >
-                    URL Audit
+                    Demo Store
                   </Link>
                 </li>
                 <li>
@@ -368,18 +383,18 @@ export default function HomePage() {
                 </li>
                 <li>
                   <Link
-                    href="/demo"
+                    href="/experiments"
                     className="text-muted-foreground transition-colors hover:text-foreground"
                   >
-                    Demo Page
+                    Experiment Lab
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="/experiments"
+                    href="/audit"
                     className="text-muted-foreground transition-colors hover:text-foreground"
                   >
-                    Experiments
+                    Storefront Audit
                   </Link>
                 </li>
               </ul>

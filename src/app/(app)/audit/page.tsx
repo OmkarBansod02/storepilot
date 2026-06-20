@@ -22,8 +22,8 @@ export default function AuditPage() {
 
       <PageContainer>
         <PageHeader
-          title="URL Audit"
-          description="Paste any public storefront or product page. Get a fast, structured conversion audit — and one experiment to run next."
+          title="Storefront Audit"
+          description="Paste any public product page. Get a structured ecommerce conversion audit — offer clarity, checkout trust, shipping reassurance, and purchase intent — with one experiment to run next."
         >
           <Badge
             variant="secondary"

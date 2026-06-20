@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getDashboardMetrics } from "@/features/analytics/server/get-dashboard-metrics";
 import type { VariantFunnelMetrics } from "@/features/analytics/types";
+import { SimulateTrafficButton } from "@/features/demo/components/simulate-traffic-button";
 import { ensureDemoPage } from "@/features/demo/server/ensure-demo-page";
 import { RunningExperimentCard } from "@/features/experiments/components/running-experiment-card";
 import { getLatestPageExperiment } from "@/features/experiments/server/get-running-experiment-summary";
@@ -91,7 +92,9 @@ export default async function ExperimentsPage() {
       <PageHeader
         title="Experiment Lab"
         description="Test product page variants, track ecommerce conversion, and deploy winners."
-      />
+      >
+        <SimulateTrafficButton />
+      </PageHeader>
 
       <div className="mt-10 grid gap-6 lg:grid-cols-3">
         {experiment ? (

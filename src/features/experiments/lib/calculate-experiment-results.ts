@@ -1,4 +1,8 @@
 import type { ExperimentArm } from "@/features/experiments/types";
+import {
+  calculateBayesianWinner,
+  type BayesianWinnerResult,
+} from "@/features/experiments/lib/calculate-bayesian-winner";
 
 export type ExperimentWinnerRecommendation =
   | ExperimentArm
@@ -18,7 +22,7 @@ export interface ExperimentLift {
   relativeLiftPercent: number | null;
 }
 
-export interface ExperimentResults {
+export interface ExperimentResults extends BayesianWinnerResult {
   arms: Record<ExperimentArm, ExperimentArmResult>;
   lift: ExperimentLift;
   recommendedWinner: ExperimentWinnerRecommendation;
@@ -75,6 +79,7 @@ export function calculateExperimentResults(
     arms.variant.conversionRate - arms.control.conversionRate;
 
   return {
+    ...calculateBayesianWinner(totals),
     arms,
     lift: {
       absoluteDifference,

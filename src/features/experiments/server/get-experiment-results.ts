@@ -1,18 +1,16 @@
 import {
   calculateExperimentResults,
   emptyExperimentArmTotals,
-  type ExperimentArmResult,
-  type ExperimentLift,
-  type ExperimentWinnerRecommendation,
+  type ExperimentResults,
 } from "@/features/experiments/lib/calculate-experiment-results";
-import type { ExperimentArm, ExperimentStatus } from "@/features/experiments/types";
+import type { ExperimentStatus } from "@/features/experiments/types";
 import { mapVariantRow } from "@/features/variants/lib/map-variant-row";
 import type { VariantStatus } from "@/features/variants/types";
 import { db } from "@/lib/db";
 import { conversions, experiments, sessions, variants } from "@/lib/db/schema";
 import { and, countDistinct, desc, eq } from "drizzle-orm";
 
-export interface ExperimentResultSummary {
+export interface ExperimentResultSummary extends ExperimentResults {
   id: string;
   pageId: string;
   variantId: string;
@@ -24,9 +22,6 @@ export interface ExperimentResultSummary {
   variantStatus: VariantStatus;
   startedAt: Date | null;
   completedAt: Date | null;
-  arms: Record<ExperimentArm, ExperimentArmResult>;
-  lift: ExperimentLift;
-  recommendedWinner: ExperimentWinnerRecommendation;
 }
 
 async function getExperimentResultTotals(

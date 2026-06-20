@@ -7,6 +7,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { DeployWinnerButton } from "@/features/experiments/components/deploy-winner-button";
+import {
+  BAYESIAN_MIN_TOTAL_PURCHASES,
+  BAYESIAN_MIN_TOTAL_VISITORS,
+} from "@/features/experiments/lib/calculate-bayesian-winner";
 import type { RunningExperimentSummary } from "@/features/experiments/server/get-running-experiment-summary";
 import type { VariantFunnelMetrics } from "@/features/analytics/types";
 import { cn } from "@/lib/utils";
@@ -37,6 +41,14 @@ function formatRelativeLift(value: number | null): string {
   if (value === null) return "—";
   const sign = value > 0 ? "+" : "";
   return `${sign}${value.toFixed(1)}%`;
+}
+
+function formatRecommendedAction(
+  action: RunningExperimentSummary["recommendedAction"],
+): string {
+  if (action === "promote_winner") return "Promote winner";
+  if (action === "needs_more_data") return "Needs more data";
+  return "Keep running";
 }
 
 function formatDate(value: Date | null): string {
@@ -122,6 +134,36 @@ function getWinnerCopy(
   };
 }
 
+function getBayesianCopy(
+  experiment: RunningExperimentSummary,
+): { label: string; caption: string } {
+  const winnerLabel =
+    experiment.bayesianWinner === "variant" ? "Variant" : "Control";
+  const totalVisitors =
+    experiment.arms.control.sessions + experiment.arms.variant.sessions;
+  const totalPurchases =
+    experiment.arms.control.conversions + experiment.arms.variant.conversions;
+
+  if (experiment.recommendedAction === "needs_more_data") {
+    return {
+      label: "Needs more data",
+      caption: `${totalVisitors}/${BAYESIAN_MIN_TOTAL_VISITORS} visitors and ${totalPurchases}/${BAYESIAN_MIN_TOTAL_PURCHASES} purchases collected.`,
+    };
+  }
+
+  if (experiment.recommendedAction === "promote_winner") {
+    return {
+      label: `${winnerLabel} is likely best`,
+      caption: "The winner has cleared the 95% Bayesian confidence threshold.",
+    };
+  }
+
+  return {
+    label: `${winnerLabel} is currently leading`,
+    caption: "Keep running until one arm reaches 95% probability of being best.",
+  };
+}
+
 export function RunningExperimentCard({
   experiment,
   showDeployAction = false,
@@ -130,10 +172,17 @@ export function RunningExperimentCard({
   const labStatus = getLabStatus(experiment);
   const isTerminal = labStatus !== "RUNNING";
   const winner = experiment.recommendedWinner;
-  const winnerCopy = getWinnerCopy(winner, labStatus);
-  const controlHighlighted = winner === "control";
-  const variantHighlighted = winner === "variant";
-  const hasWinner = winner !== "inconclusive";
+  const winnerCopy = isTerminal
+    ? getWinnerCopy(winner, labStatus)
+    : getBayesianCopy(experiment);
+  const promotionReady = experiment.recommendedAction === "promote_winner";
+  const highlightedWinner = isTerminal ? winner : experiment.bayesianWinner;
+  const controlHighlighted =
+    highlightedWinner === "control" && (isTerminal || promotionReady);
+  const variantHighlighted =
+    highlightedWinner === "variant" && (isTerminal || promotionReady);
+  const bestProbability =
+    experiment.probabilityBest[experiment.bayesianWinner];
   const liftPositive =
     experiment.lift.relativeLiftPercent !== null &&
     experiment.lift.relativeLiftPercent > 0;
@@ -201,19 +250,19 @@ export function RunningExperimentCard({
         <div
           className={cn(
             "rounded-xl border p-5",
-            hasWinner && !isTerminal && "border-success/20 bg-success/5",
+            promotionReady && !isTerminal && "border-success/20 bg-success/5",
             isTerminal && "border-border bg-muted/30",
           )}
         >
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                {isTerminal ? "Final result" : "Leading variant"}
+                {isTerminal ? "Final result" : "Bayesian confidence"}
               </p>
               <p
                 className={cn(
                   "mt-1.5 text-xl font-semibold",
-                  hasWinner && !isTerminal && "text-success",
+                  promotionReady && !isTerminal && "text-success",
                 )}
               >
                 {winnerCopy.label}
@@ -222,12 +271,12 @@ export function RunningExperimentCard({
                 {winnerCopy.caption}
               </p>
             </div>
-            {!isTerminal && hasWinner && (
+            {!isTerminal && promotionReady && (
               <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-success/10">
                 <ArrowUpRight className="size-5 text-success" />
               </div>
             )}
-            {!isTerminal && !hasWinner && (
+            {!isTerminal && !promotionReady && (
               <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted">
                 <Clock className="size-5 text-muted-foreground" />
               </div>
@@ -237,7 +286,31 @@ export function RunningExperimentCard({
           <div className="mt-4 grid gap-4 border-t pt-4 sm:grid-cols-2">
             <div>
               <p className="text-xs font-medium text-muted-foreground">
-                Relative lift
+                Probability best
+              </p>
+              <p
+                className={cn(
+                  "mt-1 text-2xl font-bold tabular-nums",
+                  promotionReady && !isTerminal && "text-success",
+                )}
+              >
+                {formatPercent(bestProbability)}
+              </p>
+            </div>
+            <div>
+              <p className="text-xs font-medium text-muted-foreground">
+                Recommended action
+              </p>
+              <p className="mt-1 text-lg font-bold">
+                {formatRecommendedAction(experiment.recommendedAction)}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-4 grid gap-4 border-t pt-4 sm:grid-cols-2">
+            <div>
+              <p className="text-xs font-medium text-muted-foreground">
+                Raw relative lift
               </p>
               <p
                 className={cn(
@@ -250,7 +323,7 @@ export function RunningExperimentCard({
             </div>
             <div>
               <p className="text-xs font-medium text-muted-foreground">
-                Absolute change
+                Raw absolute change
               </p>
               <p className="mt-1 text-2xl font-bold tabular-nums">
                 {formatSignedPercentagePoints(
@@ -261,7 +334,8 @@ export function RunningExperimentCard({
           </div>
 
           <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground/70">
-            Simple comparison — not a statistical significance test.
+            Probability uses a Beta(1, 1) prior and 25,000 stable Monte Carlo
+            samples. Lift remains the observed purchase conversion difference.
           </p>
         </div>
 
@@ -274,9 +348,10 @@ export function RunningExperimentCard({
             conversions={experiment.arms.control.conversions}
             sessions={experiment.arms.control.sessions}
             highlighted={controlHighlighted}
-            isWinner={controlHighlighted && (isTerminal || hasWinner)}
+            isWinner={controlHighlighted}
             addToCartRate={funnelByArm?.control.addToCartRate}
             revenuePerVisitorCents={funnelByArm?.control.revenuePerVisitorCents}
+            probabilityBest={experiment.probabilityBest.control}
           />
           <ArmCard
             label="Variant"
@@ -285,9 +360,10 @@ export function RunningExperimentCard({
             conversions={experiment.arms.variant.conversions}
             sessions={experiment.arms.variant.sessions}
             highlighted={variantHighlighted}
-            isWinner={variantHighlighted && (isTerminal || hasWinner)}
+            isWinner={variantHighlighted}
             addToCartRate={funnelByArm?.variant.addToCartRate}
             revenuePerVisitorCents={funnelByArm?.variant.revenuePerVisitorCents}
+            probabilityBest={experiment.probabilityBest.variant}
           />
         </div>
 
@@ -317,25 +393,29 @@ export function RunningExperimentCard({
           <div
             className={cn(
               "rounded-xl border p-4",
-              hasWinner ? "border-success/20 bg-success/5" : "bg-muted/20",
+              promotionReady
+                ? "border-success/20 bg-success/5"
+                : "bg-muted/20",
             )}
           >
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <h3 className="text-sm font-semibold">
-                  {hasWinner
+                  {promotionReady
                     ? "Ready to promote"
-                    : "Waiting for a clear winner"}
+                    : formatRecommendedAction(experiment.recommendedAction)}
                 </h3>
                 <p className="mt-0.5 text-xs text-muted-foreground">
-                  {hasWinner
-                    ? "Promote the winning variant to close the experiment."
-                    : "Collect more traffic before deploying."}
+                  {promotionReady
+                    ? "Promote the winning arm to close the experiment."
+                    : "Collect more traffic before deploying a winner."}
                 </p>
               </div>
               <DeployWinnerButton
                 experimentId={experiment.id}
-                recommendedWinner={experiment.recommendedWinner}
+                recommendedWinner={
+                  promotionReady ? experiment.bayesianWinner : "inconclusive"
+                }
               />
             </div>
           </div>
@@ -410,6 +490,7 @@ interface ArmCardProps {
   isWinner: boolean;
   addToCartRate?: number;
   revenuePerVisitorCents?: number;
+  probabilityBest: number;
 }
 
 function ArmCard({
@@ -422,6 +503,7 @@ function ArmCard({
   isWinner,
   addToCartRate,
   revenuePerVisitorCents,
+  probabilityBest,
 }: ArmCardProps) {
   return (
     <div
@@ -453,6 +535,13 @@ function ArmCard({
       <p className="mt-0.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
         Purchase conversion
       </p>
+
+      <div className="mt-3 flex items-center justify-between border-t pt-3 text-xs">
+        <span className="text-muted-foreground">Probability best</span>
+        <span className="font-semibold tabular-nums">
+          {formatPercent(probabilityBest)}
+        </span>
+      </div>
 
       {(addToCartRate !== undefined ||
         revenuePerVisitorCents !== undefined) && (

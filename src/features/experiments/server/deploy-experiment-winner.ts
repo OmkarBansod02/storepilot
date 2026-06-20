@@ -110,19 +110,19 @@ export async function deployExperimentWinner(
 
     const results = calculateExperimentResults(totals);
 
-    if (results.recommendedWinner === "inconclusive") {
+    if (results.recommendedAction !== "promote_winner") {
       throw new ExperimentError(
         "experiment_winner_inconclusive",
-        "Experiment results are inconclusive, so no winner can be deployed.",
+        "The experiment has not reached the Bayesian confidence threshold, so no winner can be deployed.",
         409,
       );
     }
 
+    const winner = results.bayesianWinner;
     const completedAt = new Date();
-    const deployedVariantId =
-      results.recommendedWinner === "variant" ? row.variant.id : null;
+    const deployedVariantId = winner === "variant" ? row.variant.id : null;
 
-    if (results.recommendedWinner === "variant") {
+    if (winner === "variant") {
       const currentBaseline = demoPageBaselineSchema.safeParse(
         row.page.baselineContent,
       );
@@ -166,7 +166,7 @@ export async function deployExperimentWinner(
     return {
       experimentId: row.experiment.id,
       pageId: row.experiment.pageId,
-      winner: results.recommendedWinner,
+      winner,
       deployedVariantId,
       completedAt,
       results,

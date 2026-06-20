@@ -95,9 +95,8 @@ Be upfront about scope. The shortcuts are deliberate and documented.
 - One site, one page, one primary conversion event, one active experiment,
   one pending variant proposal.
 - No authentication, organizations, or roles.
-- No statistical inference: results are raw conversion rates and a simple
-  winner rule (`inconclusive` if either arm has zero sessions or the rates
-  are equal). There are no confidence intervals or significance tests.
+- Promotion uses deterministic Bayesian probability with minimum traffic and
+  purchase floors. Raw conversion rates and lift remain supporting metrics.
 - The "snippet" is an in-app React provider on the demo page, not a
   third-party `<script>` tag.
 - Audit findings are deterministic heuristics, not an AI summary of the
@@ -145,11 +144,10 @@ No. It is a small, human-approved loop around product-page optimization,
 built to demonstrate product and engineering judgment without replacing the
 storefront, CMS, analytics stack, or checkout.
 
-**Why no proper stats?**
-Because adding noisy statistical machinery without enough traffic to back
-it up would feel like a tell. The current rule is honest: if either arm
-has no sessions or rates are equal, the result is `inconclusive` and
-deploy is refused. Real significance testing is the obvious next step.
+**Why Bayesian probability?**
+It gives the demo a stable, explainable decision rule without pretending raw
+lift is enough. Promotion still waits for minimum traffic, minimum purchases,
+and a 95% probability that one arm is best.
 
 **Why is AI optional?**
 Because product truth shouldn't depend on a third-party model being

@@ -264,28 +264,29 @@ Experiment results are computed from persisted attribution records:
 - relative lift percentage: absolute lift / control conversion rate, or `null`
   when the control rate is `0`
 
-Winner recommendation is deterministic:
+The decision contract uses a deterministic Bayesian calculation:
 
-- if either arm has `0` sessions, the result is `inconclusive`
-- if rates are equal, the result is `inconclusive`
-- if the variant rate is higher, the recommended winner is `variant`
-- if the control rate is higher, the recommended winner is `control`
+- `bayesianWinner` is the arm with the higher posterior probability of being best
+- fewer than 100 total visitors or 10 total purchases returns `needs_more_data`
+- at or above those floors, probability below `0.95` returns `keep_running`
+- probability at or above `0.95` returns `promote_winner`
+- raw conversion rates and lift remain supporting metrics only
 
 `POST /api/experiments/[experimentId]/deploy` performs the manual deployment
 transition. The backend:
 
 - requires the experiment to be `running`
 - recomputes results at deploy time
-- rejects deployment when the recommendation is `inconclusive`
-- completes the experiment for a control winner without changing baseline
+- rejects deployment unless `recommendedAction` is `promote_winner`
+- completes the experiment as control retained without changing baseline
   content
 - for a variant winner, writes the variant hero/CTA content into
   `pages.baseline_content`, marks the variant as `deployed`, and completes the
   experiment
 
-Phase 6 intentionally does not include confidence intervals, Bayesian testing,
-automatic deployment, rollback history, CMS integrations, multiple active
-experiments, or a generalized experimentation framework.
+Phase 6 intentionally does not include automatic deployment, rollback history,
+CMS integrations, multiple active experiments, or a generalized
+experimentation framework.
 
 ## Local Demo Reset
 

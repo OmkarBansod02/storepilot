@@ -21,6 +21,7 @@ import {
 const MAX_VISITORS = 5_000;
 const INSERT_BATCH_SIZE = 500;
 const TRAFFIC_WINDOW_MS = 14 * 24 * 60 * 60 * 1_000;
+const SIMULATION_SEED = 0x5354_4f52;
 
 type FunnelEventType =
   | "product_view"
@@ -33,6 +34,8 @@ interface FunnelRates {
   checkoutStart: number;
   purchase: number;
 }
+
+type RandomSource = () => number;
 
 interface ArmSummary {
   visitors: number;
@@ -52,21 +55,38 @@ export interface SimulateDemoTrafficResult {
   };
 }
 
-function randomRate(min: number, max: number): number {
-  return min + Math.random() * (max - min);
+function createSeededRandom(seed: number): RandomSource {
+  let state = seed >>> 0;
+
+  return () => {
+    state = (state + 0x6d2b79f5) | 0;
+    let value = Math.imul(state ^ (state >>> 15), 1 | state);
+    value ^= value + Math.imul(value ^ (value >>> 7), 61 | value);
+    return ((value ^ (value >>> 14)) >>> 0) / 4_294_967_296;
+  };
 }
 
-function createFunnelRates(): Record<ExperimentArm, FunnelRates> {
+function randomRate(
+  min: number,
+  max: number,
+  random: RandomSource,
+): number {
+  return min + random() * (max - min);
+}
+
+function createFunnelRates(
+  random: RandomSource,
+): Record<ExperimentArm, FunnelRates> {
   return {
     control: {
-      addToCart: randomRate(0.13, 0.17),
-      checkoutStart: randomRate(0.065, 0.09),
-      purchase: randomRate(0.022, 0.03),
+      addToCart: randomRate(0.13, 0.17, random),
+      checkoutStart: randomRate(0.065, 0.09, random),
+      purchase: randomRate(0.02, 0.026, random),
     },
     variant: {
-      addToCart: randomRate(0.18, 0.23),
-      checkoutStart: randomRate(0.1, 0.14),
-      purchase: randomRate(0.04, 0.06),
+      addToCart: randomRate(0.18, 0.23, random),
+      checkoutStart: randomRate(0.11, 0.15, random),
+      purchase: randomRate(0.065, 0.075, random),
     },
   };
 }
@@ -136,8 +156,11 @@ export async function simulateDemoTraffic(
   const { pageId } = await ensureDemoPage();
   const experiment = await getRunningExperimentForPage(pageId);
   const visitorCount = Math.min(input.visitors, MAX_VISITORS);
-  const rates = createFunnelRates();
-  const firstArm: ExperimentArm = Math.random() < 0.5 ? "control" : "variant";
+  const random = createSeededRandom(
+    SIMULATION_SEED ^ visitorCount ^ (experiment ? 1 : 0),
+  );
+  const rates = createFunnelRates(random);
+  const firstArm: ExperimentArm = random() < 0.5 ? "control" : "variant";
   const sessionRows: NewSession[] = [];
   const eventRows: NewEvent[] = [];
   const conversionRows: NewConversion[] = [];
@@ -168,9 +191,9 @@ export async function simulateDemoTraffic(
       experiment && arm === "variant" ? experiment.variantId : null;
     const sessionId = crypto.randomUUID();
     const firstSeenAt = new Date(
-      trafficStartedAt + Math.random() * (now - trafficStartedAt),
+      trafficStartedAt + random() * (now - trafficStartedAt),
     );
-    const funnelPosition = Math.random();
+    const funnelPosition = random();
     const armRates = rates[arm];
     const addToCart = funnelPosition < armRates.addToCart;
     const checkoutStart = funnelPosition < armRates.checkoutStart;

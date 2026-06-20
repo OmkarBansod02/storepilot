@@ -5,7 +5,6 @@ import {
 } from "@/features/experiments/lib/calculate-experiment-results";
 import type { ExperimentStatus } from "@/features/experiments/types";
 import { mapVariantRow } from "@/features/variants/lib/map-variant-row";
-import type { VariantStatus } from "@/features/variants/types";
 import type { VariantTargetArea } from "@/features/variants/schemas/variant-input";
 import { db } from "@/lib/db";
 import { conversions, experiments, sessions, variants } from "@/lib/db/schema";
@@ -20,7 +19,6 @@ export interface ExperimentResultSummary extends ExperimentResults {
   variantHeadline: string;
   variantCtaLabel: string;
   variantTargetArea: VariantTargetArea;
-  variantStatus: VariantStatus;
   startedAt: Date | null;
   completedAt: Date | null;
 }
@@ -99,7 +97,6 @@ export async function getExperimentResults(
     variantHeadline: variant.headline,
     variantCtaLabel: variant.primaryCtaLabel,
     variantTargetArea: variant.targetArea,
-    variantStatus: variant.status,
     startedAt: row.experiment.startedAt,
     completedAt: row.experiment.completedAt,
     ...results,

@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
-import { experiments, sessions, type NewSession } from "@/lib/db/schema";
-import { eq, and } from "drizzle-orm";
+import { experiments, sessions } from "@/lib/db/schema";
+import { and, desc, eq, isNull } from "drizzle-orm";
 import type { CreateSessionInput } from "@/features/snippet/schemas/session-input";
 import type { ExperimentAssignment } from "@/features/experiments/types";
 
@@ -31,6 +31,14 @@ async function getValidExperimentAssignment(
 
 export async function createSession(input: CreateSessionInput) {
   const assignment = await getValidExperimentAssignment(input);
+  // Experiment context is part of session identity; historical assignments
+  // are never rewritten when the same anonymous visitor enters a new context.
+  const assignmentCondition = assignment
+    ? and(
+        eq(sessions.experimentId, assignment.experimentId),
+        eq(sessions.experimentArm, assignment.variantArm),
+      )
+    : and(isNull(sessions.experimentId), isNull(sessions.experimentArm));
   const existing = await db
     .select({ id: sessions.id })
     .from(sessions)
@@ -38,29 +46,19 @@ export async function createSession(input: CreateSessionInput) {
       and(
         eq(sessions.pageId, input.pageId),
         eq(sessions.anonymousId, input.anonymousId),
+        assignmentCondition,
       ),
     )
+    .orderBy(desc(sessions.lastSeenAt))
     .limit(1);
 
   if (existing.length > 0) {
-    const updateValues: Partial<
-      Pick<
-        NewSession,
-        "lastSeenAt" | "userAgent" | "experimentId" | "experimentArm"
-      >
-    > = {
-      lastSeenAt: new Date(),
-      userAgent: input.userAgent ?? null,
-    };
-
-    if (assignment) {
-      updateValues.experimentId = assignment.experimentId;
-      updateValues.experimentArm = assignment.variantArm;
-    }
-
     await db
       .update(sessions)
-      .set(updateValues)
+      .set({
+        lastSeenAt: new Date(),
+        userAgent: input.userAgent ?? null,
+      })
       .where(eq(sessions.id, existing[0].id));
 
     return { sessionId: existing[0].id, created: false };

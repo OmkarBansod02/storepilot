@@ -17,7 +17,10 @@ import { cn } from "@/lib/utils";
 import { formatDemoCurrency } from "@/features/demo/lib/demo-product";
 import { formatVariantTargetArea } from "@/features/variants/lib/format-variant-target-area";
 
-export type LabStatus = "RUNNING" | "WINNER" | "PROMOTED" | "KILLED";
+export type LabStatus =
+  | "RUNNING"
+  | "VARIANT_PROMOTED"
+  | "CONTROL_RETAINED";
 
 interface RunningExperimentCardProps {
   experiment: RunningExperimentSummary;
@@ -71,57 +74,32 @@ function formatExperimentName(
 
 export function getLabStatus(experiment: RunningExperimentSummary): LabStatus {
   if (experiment.status === "running") return "RUNNING";
-  if (experiment.recommendedWinner === "variant") {
-    return experiment.variantStatus === "deployed" ? "PROMOTED" : "WINNER";
-  }
-  return "KILLED";
+  return experiment.bayesianWinner === "variant"
+    ? "VARIANT_PROMOTED"
+    : "CONTROL_RETAINED";
 }
 
 const LAB_STATUS_BADGE: Record<
   LabStatus,
-  { label: string; variant: "warning" | "success" | "default" | "destructive" }
+  { label: string; variant: "warning" | "success" | "secondary" }
 > = {
   RUNNING: { label: "Running", variant: "warning" },
-  WINNER: { label: "Winner", variant: "success" },
-  PROMOTED: { label: "Promoted", variant: "default" },
-  KILLED: { label: "Killed", variant: "destructive" },
+  VARIANT_PROMOTED: { label: "Variant promoted", variant: "success" },
+  CONTROL_RETAINED: { label: "Control retained", variant: "secondary" },
 };
 
-function getWinnerCopy(
-  winner: RunningExperimentSummary["recommendedWinner"],
+function getTerminalCopy(
   labStatus: LabStatus,
 ): { label: string; caption: string } {
-  if (labStatus === "PROMOTED") {
+  if (labStatus === "VARIANT_PROMOTED") {
     return {
       label: "Variant promoted",
       caption: "Variant was deployed as the new product page baseline.",
     };
   }
-  if (labStatus === "KILLED") {
-    return {
-      label: "Experiment killed",
-      caption:
-        winner === "control"
-          ? "Baseline outperformed the variant. Original page kept."
-          : "No clear winner. Original product page kept.",
-    };
-  }
-  if (winner === "variant") {
-    return {
-      label: "Product-page variant leading",
-      caption:
-        "The variant is outperforming the baseline on purchase conversion.",
-    };
-  }
-  if (winner === "control") {
-    return {
-      label: "Control leading",
-      caption: "The baseline is holding up against the variant.",
-    };
-  }
   return {
-    label: "Too early to call",
-    caption: "Keep the test running to collect more visitor sessions.",
+    label: "Control retained",
+    caption: "The control cleared the Bayesian confidence threshold, so the original product page remains live.",
   };
 }
 
@@ -162,12 +140,11 @@ export function RunningExperimentCard({
 }: RunningExperimentCardProps) {
   const labStatus = getLabStatus(experiment);
   const isTerminal = labStatus !== "RUNNING";
-  const winner = experiment.recommendedWinner;
   const winnerCopy = isTerminal
-    ? getWinnerCopy(winner, labStatus)
+    ? getTerminalCopy(labStatus)
     : getBayesianCopy(experiment);
   const promotionReady = experiment.recommendedAction === "promote_winner";
-  const highlightedWinner = isTerminal ? winner : experiment.bayesianWinner;
+  const highlightedWinner = experiment.bayesianWinner;
   const controlHighlighted =
     highlightedWinner === "control" && (isTerminal || promotionReady);
   const variantHighlighted =
@@ -393,20 +370,21 @@ export function RunningExperimentCard({
               <div>
                 <h3 className="text-sm font-semibold">
                   {promotionReady
-                    ? "Ready to promote"
+                    ? "Bayesian decision ready"
                     : formatRecommendedAction(experiment.recommendedAction)}
                 </h3>
                 <p className="mt-0.5 text-xs text-muted-foreground">
                   {promotionReady
-                    ? "Promote the winning arm to close the experiment."
+                    ? experiment.bayesianWinner === "variant"
+                      ? "Promote the variant to close the experiment."
+                      : "Retain the control to close the experiment."
                     : "Collect more traffic before deploying a winner."}
                 </p>
               </div>
               <DeployWinnerButton
                 experimentId={experiment.id}
-                recommendedWinner={
-                  promotionReady ? experiment.bayesianWinner : "inconclusive"
-                }
+                winner={experiment.bayesianWinner}
+                recommendedAction={experiment.recommendedAction}
               />
             </div>
           </div>
@@ -417,34 +395,36 @@ export function RunningExperimentCard({
           <div
             className={cn(
               "flex items-start gap-3 rounded-xl border p-4",
-              labStatus === "PROMOTED"
+              labStatus === "VARIANT_PROMOTED"
                 ? "border-success/20 bg-success/5"
-                : "border-destructive/20 bg-destructive/5",
+                : "border-border bg-muted/30",
             )}
           >
             <CheckCircle2
               className={cn(
                 "mt-0.5 size-4 shrink-0",
-                labStatus === "PROMOTED" ? "text-success" : "text-destructive",
+                labStatus === "VARIANT_PROMOTED"
+                  ? "text-success"
+                  : "text-primary",
               )}
             />
             <div>
               <p
                 className={cn(
                   "text-sm font-semibold",
-                  labStatus === "PROMOTED"
+                  labStatus === "VARIANT_PROMOTED"
                     ? "text-success"
-                    : "text-destructive",
+                    : "text-foreground",
                 )}
               >
-                {labStatus === "PROMOTED"
+                {labStatus === "VARIANT_PROMOTED"
                   ? "Variant promoted"
-                  : "Experiment killed"}
+                  : "Control retained"}
               </p>
               <p className="mt-0.5 text-xs text-muted-foreground">
-                {labStatus === "PROMOTED"
+                {labStatus === "VARIANT_PROMOTED"
                   ? "The variant is now the baseline for this product page."
-                  : "The baseline was kept. The variant was not deployed."}
+                  : "The original product page remains the baseline."}
               </p>
             </div>
           </div>

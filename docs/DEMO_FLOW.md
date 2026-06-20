@@ -196,9 +196,9 @@ development you can use:
 A `DevArmBadge` (visible only in development) shows which arm is currently
 rendering.
 
-Aim for roughly equal sessions per arm and at least a handful of
-conversions on each side. The deterministic winner rule needs both arms to
-have sessions and unequal rates to recommend a winner.
+Aim for roughly equal sessions per arm. Promotion requires at least 100 total
+visitors, 10 total purchases, and a 95% Bayesian probability that one arm is
+best.
 
 ---
 
@@ -207,8 +207,8 @@ have sessions and unequal rates to recommend a winner.
 1. On `/experiments`, review the computed results: assigned sessions per
    arm, converted sessions per arm, conversion rate per arm, absolute lift,
    and relative lift percentage.
-2. Read the recommended winner.
-3. If the result is conclusive, click **Deploy winner**.
+2. Review the Bayesian winner and recommended action.
+3. If the action is `promote_winner`, promote the variant or retain control.
 
 What happens behind the scenes:
 
@@ -218,14 +218,11 @@ What happens behind the scenes:
 - The server reloads the experiment, the linked variant, and the page.
 - Sessions are counted distinctly by arm; conversions are counted
   distinctly by arm, filtered to the experiment's primary conversion event.
-- `calculateExperimentResults` derives per-arm conversion rates, absolute
-  lift, relative lift, and a recommended winner:
-  - either arm with `0` sessions → `inconclusive`
-  - equal rates → `inconclusive`
-  - higher variant rate → `variant`
-  - higher control rate → `control`
-- `inconclusive` results are rejected at the API boundary (HTTP 409).
-- A `control` winner completes the experiment with no baseline change.
+- `calculateExperimentResults` derives per-arm conversion rates and raw lift,
+  then uses Bayesian probability for the winner and recommended action.
+- Results below the traffic, purchase, or 95% confidence gates are rejected at
+  the API boundary (HTTP 409).
+- A control winner completes the experiment with no baseline change.
 - A `variant` winner writes the variant's headline, subheadline, primary
   CTA label, and trust-proof row into `pages.baseline_content`, marks the
   variant `deployed`, and completes the experiment.
@@ -261,6 +258,6 @@ and restores the default baseline content.
   diagnosis. If you see "not enough data", generate more traffic first.
 - **"An experiment is already running."** Deploy the current winner or wait
   for it to complete. The MVP allows only one running experiment per page.
-- **Deploy is rejected as inconclusive.** Both arms need sessions and
-  unequal conversion rates. Force more traffic into each arm using
-  `?arm=...&freshSession=1` and submit the form on the variant arm.
+- **Promotion is not ready.** The experiment needs 100 total visitors, 10
+  purchases, and 95% Bayesian confidence. Use the traffic simulator or drive
+  more purchase sessions through the demo page.

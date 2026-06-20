@@ -245,9 +245,9 @@ A scripted walkthrough lives in
    `variant`. In development you can force an arm with `?arm=variant` or
    start a fresh anonymous session with `?freshSession=1`.
 7. Drive a few more conversions across both arms.
-8. Open `/experiments` to see lift and the recommended winner. Click
-   **Deploy winner**; the variant content is written into the page baseline
-   and the experiment completes.
+8. Open `/experiments` to see raw lift and Bayesian confidence. Once the 95%
+   gate clears, promote the variant or retain control to complete the
+   experiment.
 
 ---
 
@@ -257,8 +257,9 @@ This MVP is sharp on the loop and loose on everything around it.
 
 - One site, one page, one primary conversion event, one active experiment.
 - No authentication, organizations, or roles.
-- No statistical inference: results are raw rates and a deterministic winner
-  rule. There are no confidence intervals or significance tests.
+- Promotion uses a deterministic Bayesian probability calculation with minimum
+  traffic and purchase floors; raw conversion rates and lift remain supporting
+  metrics.
 - Anonymous IDs live in browser local storage; there is no identity graph.
 - Variant scope is hero copy, primary CTA label, and a small trust-proof row.
   No DOM rewriting or visual editor.

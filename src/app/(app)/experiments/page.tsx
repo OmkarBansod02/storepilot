@@ -25,7 +25,7 @@ const FLOW_STEPS = [
   "One improved variant is generated (hero, add-to-cart, offer, trust proof)",
   "You review and approve the change",
   "Traffic is split 50/50 — funnel metrics tracked per variant",
-  "Winner is promoted or the experiment is killed",
+  "The variant is promoted or the control is retained",
 ] as const;
 
 interface LabExperiment {

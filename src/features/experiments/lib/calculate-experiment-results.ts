@@ -4,10 +4,6 @@ import {
   type BayesianWinnerResult,
 } from "@/features/experiments/lib/calculate-bayesian-winner";
 
-export type ExperimentWinnerRecommendation =
-  | ExperimentArm
-  | "inconclusive";
-
 export interface ExperimentArmTotals {
   sessions: number;
   conversions: number;
@@ -25,7 +21,6 @@ export interface ExperimentLift {
 export interface ExperimentResults extends BayesianWinnerResult {
   arms: Record<ExperimentArm, ExperimentArmResult>;
   lift: ExperimentLift;
-  recommendedWinner: ExperimentWinnerRecommendation;
 }
 
 export function emptyExperimentArmTotals(): Record<
@@ -41,18 +36,6 @@ export function emptyExperimentArmTotals(): Record<
 function calculateRate(conversions: number, sessions: number): number {
   if (sessions === 0) return 0;
   return Math.min(conversions / sessions, 1);
-}
-
-function recommendWinner(
-  control: ExperimentArmResult,
-  variant: ExperimentArmResult,
-): ExperimentWinnerRecommendation {
-  if (control.sessions === 0 || variant.sessions === 0) return "inconclusive";
-  if (control.conversionRate === variant.conversionRate) return "inconclusive";
-
-  return variant.conversionRate > control.conversionRate
-    ? "variant"
-    : "control";
 }
 
 export function calculateExperimentResults(
@@ -88,6 +71,5 @@ export function calculateExperimentResults(
           ? null
           : (absoluteDifference / arms.control.conversionRate) * 100,
     },
-    recommendedWinner: recommendWinner(arms.control, arms.variant),
   };
 }

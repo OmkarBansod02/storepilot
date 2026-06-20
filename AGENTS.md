@@ -29,7 +29,7 @@ If there is a conflict:
 StorePilot is an ecommerce optimization MVP for self-improving storefront pages.
 
 The MVP supports:
-- URL conversion audit
+- instrumented demo storefront
 - lightweight event tracking
 - diagnosis of likely friction
 - one generated variant
@@ -204,7 +204,6 @@ These must remain deterministic:
 - conversion attribution
 - metric calculation
 - deployment state transitions
-- audit heuristics
 
 ### AI should be used only for
 - summarization
@@ -255,8 +254,8 @@ Do not introduce:
 Prefer names that explain behavior directly.
 
 Good examples:
-- `createAuditFromUrl`
-- `extractPageSignals`
+- `getDashboardMetrics`
+- `calculateExperimentResults`
 - `recordSnippetEvent`
 - `calculateScrollDepthSummary`
 - `generateVariantProposal`

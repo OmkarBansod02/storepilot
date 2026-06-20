@@ -5,7 +5,7 @@ StorePilot is an autonomous ecommerce optimization engine. It tracks storefront 
 StorePilot is a Next.js project that walks a single storefront page through one
 complete optimization loop:
 
-**audit → observe → diagnose → generate → approve → test → deploy**
+**observe → diagnose → generate → approve → test → deploy**
 
 It is not a production analytics platform, a generalized experimentation
 framework, or a no-code storefront editor. It is the smallest believable
@@ -16,28 +16,23 @@ full-stack execution.
 
 ## What StorePilot does
 
-1. **Audit a URL.** Paste a public URL. StorePilot renders the page with
-   Playwright, captures a screenshot, extracts structured page signals
-   (headline, CTA labels, form presence, trust signals, etc.) and runs
-   deterministic heuristics to produce a conversion audit with one recommended
-   experiment.
-2. **Observe a demo product page.** A bundled demo product page is wired up to
+1. **Observe a demo product page.** A bundled demo product page is wired up to
    a lightweight in-app tracker. Product views, add-to-cart actions, checkout
    starts, purchases, revenue, and scroll depth are recorded into Postgres.
-3. **Diagnose the funnel.** A small deterministic rule set turns aggregated
+2. **Diagnose the funnel.** A small deterministic rule set turns aggregated
    metrics into one primary bottleneck (e.g. weak above-the-fold interest,
    form friction, low CTA engagement) with supporting signals and a confidence
    level.
-4. **Generate one variant.** Given the current diagnosis and the persisted
+3. **Generate one variant.** Given the current diagnosis and the persisted
    baseline content, StorePilot drafts one improved product-page proposal. If
    `OPENAI_API_KEY` is configured the draft is AI-generated and validated
    against a strict zod schema; otherwise a deterministic fallback produces a
    validated proposal mapped from the known bottleneck.
-5. **Approve and test.** A human approves the variant. Approval creates one
+4. **Approve and test.** A human approves the variant. Approval creates one
    running A/B experiment. The demo page bucket-assigns visitors by hashing
    `experimentId + anonymousId`; the assignment is also written to a short
    browser cookie. Conversions are attributed by arm.
-6. **Deploy the winner.** Results are recomputed deterministically at deploy
+5. **Deploy the winner.** Results are recomputed deterministically at deploy
    time. If the recommendation is conclusive, the winning variant content is
    written back into the page baseline and the experiment is completed.
 
@@ -68,7 +63,6 @@ loop rather than as a finished commercial offering.
 - **Styling:** Tailwind CSS v4, shadcn/ui primitives, Radix UI
 - **Database:** Postgres + Drizzle ORM
 - **Validation:** zod at every request and AI-output boundary
-- **Page analysis:** Playwright + lightweight DOM extraction
 - **AI (optional):** OpenAI for variant drafting; deterministic fallback when
   no key is configured
 
@@ -79,13 +73,12 @@ loop rather than as a finished commercial offering.
 ```text
 src/
   app/                       Next.js App Router routes
-    (app)/                   App shell (audit, dashboard, experiments)
+    (app)/                   App shell (dashboard, experiments)
     demo/                    The instrumented demo product page
-    api/                     Thin route handlers (audit, events, sessions,
+    api/                     Thin route handlers (events, sessions,
                              variants, experiments)
   components/ui/             Shared shadcn-style primitives
   features/
-    audit/                   URL audit: capture, extract, heuristics, UI
     analytics/               Event ingestion, metrics, diagnosis rules
     snippet/                 In-app tracker (client) + session ingestion
     variants/                Variant proposal generation (AI + fallback)
@@ -115,9 +108,6 @@ product truth.
 
 | Concern                       | Deterministic | AI        |
 |-------------------------------|---------------|-----------|
-| URL validation                | yes           | no        |
-| Page signal extraction        | yes           | no        |
-| Audit heuristics / scoring    | yes           | no        |
 | Event ingestion / validation  | yes           | no        |
 | Metric aggregation            | yes           | no        |
 | Diagnosis rules               | yes           | no        |
@@ -141,8 +131,6 @@ for the full contract.
 
 - `sites`, `pages` — the tracked storefront and product page; `pages.baseline_content`
   stores the live demo baseline.
-- `audits` — one URL audit run with extracted signals, findings, and a
-  recommended experiment.
 - `sessions`, `events` — anonymous sessions and validated snippet events with
   typed payloads.
 - `variants` — one pending variant proposal at a time, validated content +
@@ -151,8 +139,8 @@ for the full contract.
   event, and lifecycle timestamps.
 - `conversions` — attributed conversions per experiment, session, and arm.
 
-Enums (`audit_status`, `event_type`, `variant_status`, `experiment_status`,
-`experiment_arm`) keep state transitions explicit.
+Enums keep event, variant, experiment, and assignment state transitions
+explicit.
 
 ---
 
@@ -168,7 +156,6 @@ Enums (`audit_status`, `event_type`, `variant_status`, `experiment_status`,
 
 ```bash
 npm install
-npx playwright install chromium
 ```
 
 ### 2. Start local Postgres
@@ -222,7 +209,6 @@ npm run dev
 Then open:
 
 - `http://localhost:3000` — landing
-- `http://localhost:3000/audit` — URL audit
 - `http://localhost:3000/demo` — the instrumented demo product page
 - `http://localhost:3000/dashboard` — metrics + diagnosis + variant proposal
 - `http://localhost:3000/experiments` — running experiment + results + deploy
@@ -235,17 +221,16 @@ A scripted walkthrough lives in
 [`docs/DEMO_FLOW.md`](./docs/DEMO_FLOW.md). The short version:
 
 1. Run `npm run db:reset-demo` to start from a clean baseline.
-2. Visit `/audit`, paste a public URL, and review the generated audit.
-3. Visit `/demo` in a few browser sessions (incognito works well) and
+2. Visit `/demo` in a few browser sessions (incognito works well) and
    interact: view the product, add it to cart, start checkout, and purchase.
-4. Open `/dashboard` to see aggregated metrics and the deterministic
+3. Open `/dashboard` to see aggregated metrics and the deterministic
    diagnosis card.
-5. From the dashboard, generate a variant proposal and approve it.
-6. Visit `/demo` again — you will now be bucketed into `control` or
+4. From the dashboard, generate a variant proposal and approve it.
+5. Visit `/demo` again — you will now be bucketed into `control` or
    `variant`. In development you can force an arm with `?arm=variant` or
    start a fresh anonymous session with `?freshSession=1`.
-7. Drive a few more conversions across both arms.
-8. Open `/experiments` to see raw lift and Bayesian confidence. Once the 95%
+6. Drive a few more conversions across both arms.
+7. Open `/experiments` to see raw lift and Bayesian confidence. Once the 95%
    gate clears, promote the variant or retain control to complete the
    experiment.
 
@@ -265,11 +250,6 @@ This MVP is sharp on the loop and loose on everything around it.
   No DOM rewriting or visual editor.
 - The "snippet" is an in-app React provider on the demo page rather than a
   third-party `<script>` tag.
-- Screenshots and extracted signals are stored inline rather than in object
-  storage.
-- Audit findings use deterministic heuristics; AI-generated summaries are
-  intentionally not part of the audit critical path.
-- No background job runner; audits run inline against the request.
 
 ---
 
@@ -283,10 +263,6 @@ In order of likely value:
 - **External snippet.** A small standalone `<script>` SDK so any storefront can
   install StorePilot without integrating React.
 - **Multi-tenant + auth.** Sites, pages, members, API keys, billing.
-- **Background jobs.** Move audit capture and AI calls off the request path
-  (Inngest, Trigger.dev, or a queue).
-- **Object storage.** Screenshots and large extracted artifacts in S3/R2,
-  with signed URLs.
 - **Richer variants.** Iterative variant generation, side-by-side preview,
   edit-before-approve, and structured rollback history.
 - **Deeper diagnosis.** Session-level paths, segment slicing, and AI-assisted

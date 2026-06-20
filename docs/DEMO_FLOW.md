@@ -2,8 +2,8 @@
 
 A step-by-step walkthrough of the full StorePilot loop on a local machine. The
 goal is for someone unfamiliar with the project to start from a clean state
-and exercise every stage — audit, observe, diagnose, generate, approve, test,
-deploy — in roughly five to ten minutes.
+and exercise every stage — observe, diagnose, generate, approve, test, deploy —
+in roughly five to ten minutes.
 
 This document assumes you have already followed the **Running locally**
 section of [`README.md`](../README.md) (env vars set, migrations applied,
@@ -30,42 +30,9 @@ You should now have:
 
 ---
 
-## 1. Audit a URL
+## 1. Generate traffic on the demo page
 
-1. Open `http://localhost:3000/audit`.
-2. Paste any public URL (a product page works best).
-3. Submit.
-
-What happens behind the scenes:
-
-- The URL is validated by zod (`features/audit/schemas/audit-input.ts`).
-- `POST /api/audit` calls `createAudit` in
-  `features/audit/server/create-audit.ts`.
-- `capturePageForAudit` launches Playwright (Chromium), navigates to the
-  page, captures a screenshot, and extracts structured signals (title,
-  headings, CTA labels, form presence, trust hints, etc.).
-- `analyzePageHeuristics` runs deterministic rules over those signals to
-  produce findings, an overall score, an issue list, and one recommended
-  experiment.
-- The full audit is validated against `auditResultSchema` and returned to
-  the UI.
-
-What you should see:
-
-- A screenshot of the captured page.
-- A short page summary and key signals.
-- A prioritized list of findings with severity.
-- One recommended experiment and rationale.
-
-> Note: audits are computed inline against the request, so first-run cold
-> starts can take a few seconds while Chromium boots.
-
----
-
-## 2. Generate traffic on the demo page
-
-The audit surface is the cold-start hook. The richer loop runs against the
-bundled instrumented product page at `/demo`.
+The loop starts on the bundled instrumented product page at `/demo`.
 
 1. Open `http://localhost:3000/demo` in a regular browser window.
 2. Scroll to the bottom of the page.
@@ -91,7 +58,7 @@ What happens behind the scenes:
 
 ---
 
-## 3. Inspect aggregated metrics + diagnosis
+## 2. Inspect aggregated metrics + diagnosis
 
 1. Open `http://localhost:3000/dashboard`.
 
@@ -124,7 +91,7 @@ If the dashboard says `not_enough_data`, drive more sessions through
 
 ---
 
-## 4. Generate and approve a variant
+## 3. Generate and approve a variant
 
 1. Still on `/dashboard`, click **Generate variant** (or equivalent CTA in
    the variant proposal section).
@@ -150,7 +117,7 @@ What happens behind the scenes:
 
 ---
 
-## 5. Run an A/B test
+## 4. Run an A/B test
 
 Approving the variant creates one running experiment.
 
@@ -202,7 +169,7 @@ best.
 
 ---
 
-## 6. Deploy the winner
+## 5. Deploy the winner
 
 1. On `/experiments`, review the computed results: assigned sessions per
    arm, converted sessions per arm, conversion rate per arm, absolute lift,
@@ -232,7 +199,7 @@ even without an active experiment.
 
 ---
 
-## 7. Resetting between runs
+## 6. Resetting between runs
 
 To run the full demo again from scratch:
 
@@ -249,9 +216,6 @@ and restores the default baseline content.
 
 ## Troubleshooting
 
-- **Audit hangs or fails on first run.** Make sure `npx playwright install
-  chromium` has run. The audit route uses the Node.js runtime
-  (`export const runtime = "nodejs"`).
 - **Dashboard shows `not_enough_data`.** Drive at least 5 sessions and 10
   page views through `/demo`.
 - **Variant generation is rejected.** The server requires a `ready`

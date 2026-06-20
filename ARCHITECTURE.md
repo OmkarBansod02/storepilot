@@ -28,22 +28,11 @@ The architecture should optimize for:
 
 ## Core product shape
 
-StorePilot has two main surfaces:
+StorePilot has three main surfaces:
 
-1. **URL Audit**
-   - user pastes a public website URL
-   - system captures screenshot + page structure
-   - system produces a conversion audit
-   - system recommends one experiment
-
-2. **Snippet-powered Optimizer**
-   - user installs a lightweight snippet on a product page
-   - system collects key behavior events
-   - system diagnoses likely friction
-   - system generates one improved variant
-   - user approves the variant
-   - system runs one A/B test
-   - user deploys the winner
+1. **Demo Store** — instrumented ecommerce product page
+2. **Dashboard** — funnel metrics, diagnosis, and traffic simulation
+3. **Experiment Lab** — A/B results, Bayesian confidence, and winner promotion
 
 This MVP supports:
 - one product page
@@ -73,11 +62,8 @@ Use deterministic logic for:
 - experiment assignment
 - conversion attribution
 - deploy logic
-- audit heuristics
 
 Use AI for:
-- summarizing page issues
-- prioritizing findings
 - generating experiment hypotheses
 - generating variant copy/spec
 - producing human-readable rationale
@@ -144,15 +130,8 @@ without jumping across too many files.
 ### Validation
 - zod
 
-### Browser/page analysis
-- Playwright
-- lightweight DOM parsing utilities
-
 ### Optional background jobs
 - Inngest or Trigger.dev if needed later
-
-### Storage
-- blob/object storage for screenshots and generated assets
 
 ---
 
@@ -163,16 +142,11 @@ src/
   app/
     (marketing)/
       page.tsx
-    audit/
-      page.tsx
-      [auditId]/
-        page.tsx
     dashboard/
       page.tsx
     experiments/
       page.tsx
     api/
-      audit/
       events/
       experiments/
       variants/
@@ -182,13 +156,6 @@ src/
     layout/
 
   features/
-    audit/
-      components/
-      server/
-      schemas/
-      lib/
-      types.ts
-
     analytics/
       components/
       server/
@@ -322,13 +289,6 @@ This folder should stay thin and generic.
 
 Feature prompts should live close to the feature when they are feature-specific.
 
-src/lib/browser
-
-Owns:
-
-Playwright setup
-browser session helpers
-reusable screenshot/extraction utilities
 src/server
 
 Owns cross-feature server concerns only.
@@ -342,23 +302,7 @@ truly shared backend orchestration
 Do not move normal feature logic here if it belongs inside a feature.
 
 Main system flows
-1. URL Audit flow
-High-level flow
-user submits URL
-input is validated
-page is rendered with Playwright
-screenshot is captured
-page structure is extracted
-deterministic heuristics analyze likely issues
-AI converts extracted signals into a structured audit
-audit is stored
-audit result is rendered in UI
-Ownership
-route entry: app/api/audit/* or server action
-orchestration: features/audit/server/*
-validation: features/audit/schemas/*
-extraction helpers: features/audit/lib/* and lib/browser/*
-2. Snippet event ingestion flow
+1. Snippet event ingestion flow
 High-level flow
 snippet initializes session ID
 page events are captured on the client
@@ -371,7 +315,7 @@ client snippet code: features/snippet/client/*
 server ingestion: features/snippet/server/*
 schemas: features/snippet/schemas/*
 aggregation logic: features/analytics/server/*
-3. Diagnosis flow
+2. Diagnosis flow
 High-level flow
 analytics reads collected events
 deterministic aggregation computes key metrics
@@ -412,21 +356,16 @@ Deterministic logic
 
 These must stay deterministic and testable:
 
-URL validation
 event payload validation
 session identification
 metric aggregation
 bucketing / assignment
 conversion attribution
-audit signal extraction
-heuristic issue detection
 deploy state transitions
 AI logic
 
 These may use AI:
 
-summarizing audit findings
-prioritizing issues
 drafting experiment recommendation
 generating variant headline/subheadline/CTA/trust row
 converting signals into concise founder-friendly output
@@ -469,7 +408,6 @@ Core tables:
 
 sites
 pages
-audits
 sessions
 events
 variants
@@ -569,8 +507,6 @@ Server side
 Should own:
 
 DB access
-audit orchestration
-page analysis
 AI calls
 metric aggregation
 experiment creation
@@ -598,9 +534,6 @@ singular responsibility per file
 
 Examples:
 
-createAuditFromUrl
-extractPageSignals
-generateAuditSummary
 assignExperimentArm
 recordSnippetEvent
 calculateExperimentLift

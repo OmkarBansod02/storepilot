@@ -10,7 +10,7 @@ database contract, see [`SCHEMA.md`](./SCHEMA.md).
 
 StorePilot is a single Next.js (App Router) application backed by Postgres.
 
-- The frontend renders the audit, dashboard, experiment, and demo product-page
+- The frontend renders the dashboard, experiment, and demo product-page
   surfaces.
 - API route handlers are thin: validate input, call a feature server
   function, return a typed result.
@@ -34,7 +34,6 @@ and traceable.
 - **Tailwind CSS v4** and **shadcn/ui** primitives over **Radix UI**
 - **Postgres** via **Drizzle ORM**
 - **zod** at every request boundary and AI output boundary
-- **Playwright** (Chromium) for URL audit capture
 - **OpenAI** as an optional variant drafting backend
 
 ---
@@ -44,14 +43,13 @@ and traceable.
 ```text
 src/
   app/
-    (app)/        App shell: /audit, /dashboard, /experiments
+    (app)/        App shell: /dashboard, /experiments
     demo/         Instrumented demo product page
     api/          Route handlers (thin)
   components/
     ui/           Shared shadcn-style primitives
     layout/       Shared layout shells
   features/
-    audit/        URL audit
     analytics/    Event ingestion, metrics, diagnosis
     snippet/      In-app tracker (client) + session ingestion
     variants/     Variant proposal (AI + fallback)
@@ -80,22 +78,21 @@ A typical write request flows like this:
    `lib/validations/parse-json-body.ts`. Validation failures short-circuit
    with a typed error response.
 3. The handler delegates to a feature server function (for example,
-   `features/audit/server/create-audit.ts`).
-4. The server function does the work — DB queries, Playwright, AI calls —
+   `features/experiments/server/create-experiment.ts`).
+4. The server function does the work — DB queries and optional AI calls —
    and returns a typed result.
-5. Domain errors are thrown as typed errors (for example, `AuditError`,
-   `ExperimentError`) and the handler converts them to stable error
+5. Domain errors are thrown as typed errors (for example, `ExperimentError`)
+   and the handler converts them to stable error
    responses.
 
 Read requests follow the same shape minus the body parse.
 
 ---
 
-## The seven stages
+## The six stages
 
 | Stage      | Owner                                  | Mechanism            |
 |------------|----------------------------------------|----------------------|
-| Audit      | `features/audit/server`                | Playwright + heuristics |
 | Observe    | `features/snippet/client` + `features/snippet/server` + `features/analytics/server/record-snippet-event.ts` | React provider + `/api/sessions` + `/api/events` |
 | Diagnose   | `features/analytics/lib/diagnose-dashboard-metrics.ts` | Deterministic rules over aggregated metrics |
 | Generate   | `features/variants/server/generate-variant-proposal.ts` | AI draft or deterministic fallback, zod-validated |
@@ -109,9 +106,6 @@ Read requests follow the same shape minus the body parse.
 
 Anything that affects truth is deterministic and lives in plain TypeScript:
 
-- URL validation
-- Page signal extraction
-- Audit heuristics and scoring
 - Event ingestion and payload validation
 - Metric aggregation
 - Diagnosis rules
@@ -139,8 +133,6 @@ contract.
 
 - `sites`, `pages` — the tracked storefront and product page. `pages.baseline_content`
   is the live demo baseline copy.
-- `audits` — one URL audit per row with extracted signals, findings, and a
-  recommended experiment.
 - `sessions` — anonymous visitor sessions, optionally tagged with
   `experiment_id` and `experiment_arm`.
 - `events` — validated snippet events with typed payloads, including legacy
@@ -165,7 +157,7 @@ need to be re-shaped for every small change.
 Server side owns anything that affects product state:
 
 - DB reads and writes
-- Playwright and AI calls
+- Optional AI calls
 - Metric aggregation
 - Experiment creation, assignment validation, conversion attribution
 - Deploy transitions
@@ -212,8 +204,7 @@ absent:
 - No generic event bus.
 - No generalized experimentation framework (one running experiment, two
   arms, one primary event).
-- No background queue (audits and AI calls run inline; this is acceptable
-  at MVP scale).
+- No background queue; AI calls run inline at MVP scale.
 - No multi-tenant primitives — there is no organization, member, or auth
   concept.
 
@@ -226,20 +217,17 @@ now would make the codebase harder to read, not easier.
 
 If you want to trace one path through the system end-to-end:
 
-1. `src/app/api/audit/route.ts` →
-   `src/features/audit/server/create-audit.ts` →
-   `src/features/audit/lib/analyze-page-heuristics.ts`
-2. `src/features/snippet/client/tracker-provider.tsx` →
+1. `src/features/snippet/client/tracker-provider.tsx` →
    `src/app/api/events/route.ts` →
    `src/features/analytics/server/record-snippet-event.ts`
-3. `src/features/analytics/server/get-dashboard-metrics.ts` →
+2. `src/features/analytics/server/get-dashboard-metrics.ts` →
    `src/features/analytics/lib/diagnose-dashboard-metrics.ts`
-4. `src/app/api/variants/route.ts` →
+3. `src/app/api/variants/route.ts` →
    `src/features/variants/server/generate-variant-proposal.ts`
-5. `src/app/api/experiments/route.ts` →
+4. `src/app/api/experiments/route.ts` →
    `src/features/experiments/server/create-experiment.ts`
-6. `src/features/demo/server/get-demo-experiment-runtime.ts`
-7. `src/app/api/experiments/[experimentId]/deploy/route.ts` →
+5. `src/features/demo/server/get-demo-experiment-runtime.ts`
+6. `src/app/api/experiments/[experimentId]/deploy/route.ts` →
    `src/features/experiments/server/deploy-experiment-winner.ts`
 
-Those seven files cover every stage of the loop.
+Those six paths cover every stage of the loop.

@@ -1,10 +1,8 @@
 import Link from "next/link";
 import {
   ArrowRight,
-  Search,
   FlaskConical,
   Eye,
-  Telescope,
   Activity,
   Stethoscope,
   Sparkles,
@@ -18,46 +16,41 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { TopNav } from "@/components/layout/top-nav";
 
 const loopSteps = [
   {
     number: "01",
-    label: "Audit",
-    description: "Analyze the page for likely conversion issues.",
-    icon: Telescope,
-  },
-  {
-    number: "02",
     label: "Observe",
     description: "Collect real visitor behavior signals.",
     icon: Activity,
   },
   {
-    number: "03",
+    number: "02",
     label: "Diagnose",
     description: "Identify the most likely friction point.",
     icon: Stethoscope,
   },
   {
-    number: "04",
+    number: "03",
     label: "Generate",
     description: "Draft one improved product-page variant.",
     icon: Sparkles,
   },
   {
-    number: "05",
+    number: "04",
     label: "Approve",
     description: "Human review before anything ships.",
     icon: ShieldCheck,
   },
   {
-    number: "06",
+    number: "05",
     label: "Test",
     description: "Run a clean 50/50 split on real traffic.",
     icon: SplitSquareHorizontal,
   },
   {
-    number: "07",
+    number: "06",
     label: "Ship",
     description: "Promote the winner. Repeat the loop.",
     icon: Rocket,
@@ -98,51 +91,12 @@ const entryPoints = [
     cta: "Open experiment lab",
     icon: FlaskConical,
   },
-  {
-    eyebrow: "Audit",
-    title: "Storefront Audit",
-    description:
-      "Paste a product page URL. Get prioritized conversion issues and one recommended experiment.",
-    href: "/audit",
-    cta: "Run an audit",
-    icon: Search,
-  },
 ] as const;
 
 export default function HomePage() {
   return (
     <div className="flex min-h-full flex-col">
-      <header className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-6">
-        <Link href="/" className="flex items-center gap-2.5">
-          <span
-            aria-hidden
-            className="size-2.5 rounded-full bg-primary shadow-[0_0_0_4px_var(--accent),0_0_8px_rgba(200,90,40,0.15)]"
-          />
-          <span className="text-base font-semibold tracking-tight">
-            StorePilot
-          </span>
-        </Link>
-        <nav className="flex items-center gap-1">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/demo">Demo Store</Link>
-          </Button>
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/dashboard">Dashboard</Link>
-          </Button>
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/experiments">Experiment Lab</Link>
-          </Button>
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/audit">Storefront Audit</Link>
-          </Button>
-          <Button size="sm" className="ml-2" asChild>
-            <Link href="/demo">
-              Try the demo
-              <ArrowRight className="size-3.5" />
-            </Link>
-          </Button>
-        </nav>
-      </header>
+      <TopNav />
 
       <main className="flex-1">
         {/* Hero */}
@@ -195,7 +149,7 @@ export default function HomePage() {
                   className="h-12 px-5 text-[15px]"
                   asChild
                 >
-                  <Link href="/audit">Run a Storefront Audit</Link>
+                  <Link href="/dashboard">View live funnel</Link>
                 </Button>
               </div>
 
@@ -300,15 +254,15 @@ export default function HomePage() {
               Get started
             </Badge>
             <h2 className="mt-5 font-heading text-[32px] font-bold tracking-tight sm:text-[40px]">
-              Four ways into the loop.
+              Three parts. One measurable loop.
             </h2>
             <p className="mt-4 text-[15px] leading-relaxed text-muted-foreground sm:text-base">
-              Browse the demo store, monitor funnel metrics, run a split test,
-              or audit any product page for conversion friction.
+              Browse the tracked store, understand the funnel, then test and
+              promote a stronger product-page variant.
             </p>
           </div>
 
-          <div className="mx-auto mt-14 grid max-w-5xl gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mx-auto mt-14 grid max-w-5xl gap-5 sm:grid-cols-3">
             {entryPoints.map((entry) => (
               <Link
                 key={entry.href}
@@ -384,14 +338,6 @@ export default function HomePage() {
                     className="text-muted-foreground transition-colors hover:text-foreground"
                   >
                     Experiment Lab
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/audit"
-                    className="text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    Storefront Audit
                   </Link>
                 </li>
               </ul>

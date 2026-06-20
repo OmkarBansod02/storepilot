@@ -6,8 +6,8 @@
 StorePilot is an ecommerce optimization MVP for self-improving storefront pages.
 
 It helps a founder or product/growth engineer:
-- paste a URL and get a fast conversion audit
-- install a lightweight snippet
+- explore an instrumented demo storefront
+- use lightweight funnel tracking
 - collect a few key behavior events
 - identify likely friction
 - generate one improved variant
@@ -16,7 +16,7 @@ It helps a founder or product/growth engineer:
 - and deploy the winner
 
 It is a narrow, believable product wedge designed to demonstrate the core product loop:
-**audit → observe → diagnose → generate → approve → test → ship**
+**observe → diagnose → generate → approve → test → ship**
 
 ---
 
@@ -90,36 +90,14 @@ The MVP supports:
 - one active experiment at a time
 - one generated variant at a time
 
-The MVP has two main surfaces:
-1. URL Audit
-2. Snippet-powered Optimizer
+The MVP has three main surfaces:
+1. Demo Store
+2. Dashboard
+3. Experiment Lab
 
 ---
 
-## Surface A — URL Audit
-
-### User flow
-1. user pastes a public website URL
-2. system captures a page screenshot
-3. system extracts key page structure
-4. system identifies likely conversion issues
-5. system returns a clean audit with one recommended experiment
-
-### Output should include
-- screenshot
-- page summary
-- key findings
-- prioritized issues
-- likely conversion risks
-- one recommended experiment
-- rationale for the recommendation
-
-### Purpose
-This is the low-friction entry point and quick demo hook.
-
----
-
-## Surface B — Snippet-powered Optimizer
+## Snippet-powered Optimizer
 
 ### User flow
 1. user installs a lightweight snippet
@@ -132,7 +110,7 @@ This is the low-friction entry point and quick demo hook.
 8. user can deploy the winner
 
 ### Purpose
-This is the deeper proof that the product is not just an audit tool.
+This demonstrates the complete behavior-to-winner optimization loop.
 
 ---
 
@@ -140,25 +118,22 @@ This is the deeper proof that the product is not just an audit tool.
 
 The MVP should demonstrate this loop clearly:
 
-### 1. Audit
-Analyze the page and identify probable conversion weaknesses.
-
-### 2. Observe
+### 1. Observe
 Collect behavioral data from real interactions.
 
-### 3. Diagnose
-Turn page signals and behavioral data into a likely bottleneck.
+### 2. Diagnose
+Turn behavioral data into a likely bottleneck.
 
-### 4. Generate
+### 3. Generate
 Propose one improved page variant.
 
-### 5. Approve
+### 4. Approve
 Require a human to approve the change before experiment launch.
 
-### 6. Test
+### 5. Test
 Split traffic between baseline and variant.
 
-### 7. Ship
+### 6. Ship
 Show lift and allow the winner to become the new default.
 
 ---
@@ -187,14 +162,6 @@ The codebase itself should showcase clean thinking and clean execution.
 ---
 
 ## In scope
-
-### URL Audit
-- public URL input
-- screenshot capture
-- basic page signal extraction
-- heuristic issue detection
-- structured AI-generated audit
-- clean audit result UI
 
 ### Snippet tracking
 - session initialization
@@ -248,16 +215,14 @@ Do not build these in the MVP:
 
 The MVP is successful if it can demonstrate this full story:
 
-1. Paste a URL
-2. Get a believable audit
-3. Install snippet on a demo product page
-4. Record real events
-5. Show the likely bottleneck
-6. Generate one better variant
-7. Approve the experiment
-8. Run a basic A/B test
-9. Show results
-10. Deploy the winner
+1. Open the demo product page
+2. Record real events
+3. Show the likely bottleneck
+4. Generate one better variant
+5. Approve the experiment
+6. Run a basic A/B test
+7. Show Bayesian winner confidence
+8. Deploy the winner
 
 A strong result is a product that:
 - feels coherent
@@ -270,27 +235,22 @@ A strong result is a product that:
 
 ## User stories
 
-### Story 1 — Instant audit
-As a founder,
-I want to paste a URL and get a useful conversion audit,
-so I can quickly understand what may be hurting purchases or lead capture.
-
-### Story 2 — Behavior-backed diagnosis
+### Story 1 — Behavior-backed diagnosis
 As a growth/product engineer,
 I want to collect a few key interaction signals from a page,
-so I can validate whether the audit is supported by real traffic.
+so I can understand where shoppers leave the funnel.
 
-### Story 3 — Guided improvement
+### Story 2 — Guided improvement
 As a user,
 I want the system to propose one clear experiment,
 so I do not have to manually coordinate design, copy, and engineering work.
 
-### Story 4 — Human-in-the-loop launch
+### Story 3 — Human-in-the-loop launch
 As a user,
 I want to approve the variant before it goes live,
 so I stay in control of what gets tested.
 
-### Story 5 — Simple winner deployment
+### Story 4 — Simple winner deployment
 As a user,
 I want to promote the winning version,
 so the product loop feels complete.
@@ -299,24 +259,14 @@ so the product loop feels complete.
 
 ## Functional requirements
 
-## 1. URL audit
-The system must:
-- accept a public URL
-- validate it
-- render the page
-- capture a screenshot
-- extract key page signals
-- generate a structured audit
-- store and display the result
-
-## 2. Snippet tracking
+## 1. Snippet tracking
 The system must:
 - initialize anonymous session identity
 - capture key events
 - send events to the backend
 - store events reliably
 
-## 3. Dashboard
+## 2. Dashboard
 The system must display:
 - total sessions
 - add-to-cart rate
@@ -327,7 +277,7 @@ The system must display:
 - top diagnosis
 - recommended experiment
 
-## 4. Variant generation
+## 3. Variant generation
 The system must:
 - represent the baseline page in structured form
 - generate one improved variant
@@ -335,14 +285,14 @@ The system must:
 - preview it clearly
 - allow approval before launch
 
-## 5. Experiment runtime
+## 4. Experiment runtime
 The system must:
 - assign users to control or variant
 - record conversions by arm
 - show a simple comparison
 - allow only one active experiment for the MVP
 
-## 6. Deployment
+## 5. Deployment
 The system must:
 - allow manual promotion of the winner
 - update the baseline state
@@ -373,16 +323,6 @@ The codebase should:
 
 ## Data tracked in MVP
 
-### Page signals
-- page title
-- main heading
-- subheading hints
-- CTA labels
-- nav link count
-- trust signal hints
-- form presence
-- section hints
-
 ### Snippet events
 - product view
 - scroll milestone
@@ -401,8 +341,6 @@ The codebase should:
 ## AI usage policy
 
 AI is allowed for:
-- summarizing audit findings
-- prioritizing issues
 - writing experiment rationale
 - generating structured variant content
 - generating human-readable explanations
@@ -449,7 +387,7 @@ Important states to design well:
 The product should support a strong short demo.
 
 A good demo should show:
-- fast initial audit value
+- a clear instrumented demo storefront
 - real data collection
 - clear diagnosis
 - one generated improvement
@@ -462,7 +400,6 @@ A good demo should show:
 ## What to skip if time gets tight
 
 If time is limited, keep:
-- URL audit
 - event collection basics
 - one diagnosis card
 - one variant generation flow

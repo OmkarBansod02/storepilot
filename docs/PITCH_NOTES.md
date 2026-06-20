@@ -12,7 +12,7 @@ product. Frame it as evidence of product and engineering judgment.
 ## One-line description
 
 > StorePilot is the smallest believable version of an autonomous ecommerce
-> optimization loop: audit, observe, diagnose, generate, approve, test, deploy.
+> optimization loop: observe, diagnose, generate, approve, test, deploy.
 
 ---
 
@@ -29,24 +29,22 @@ product. Frame it as evidence of product and engineering judgment.
 
 ---
 
-## What it does, in seven beats
+## What it does, in six beats
 
-1. **Audit a URL.** Playwright renders the page, deterministic heuristics
-   produce a structured audit with findings and one recommended experiment.
-2. **Observe a demo product page.** An in-app tracker records product views,
+1. **Observe a demo product page.** An in-app tracker records product views,
    add-to-cart actions, checkout starts, purchases, revenue, and scroll depth
    into Postgres.
-3. **Diagnose.** A small deterministic rule set turns aggregated metrics
+2. **Diagnose.** A small deterministic rule set turns aggregated metrics
    into one primary bottleneck with supporting signals and a confidence
    level.
-4. **Generate.** A variant proposal is drafted from the diagnosis and the
+3. **Generate.** A variant proposal is drafted from the diagnosis and the
    current baseline (AI when configured, deterministic fallback otherwise)
    and validated through a strict zod schema.
-5. **Approve.** A human approves the variant. No experiment runs without
+4. **Approve.** A human approves the variant. No experiment runs without
    approval.
-6. **Test.** One running A/B experiment per page. Visitors are bucketed by
+5. **Test.** One running A/B experiment per page. Visitors are bucketed by
    hashing `experimentId + anonymousId`. Conversions are attributed by arm.
-7. **Deploy.** Results are recomputed deterministically. A conclusive
+6. **Deploy.** Results are recomputed deterministically. A conclusive
    winner writes the variant content into the page baseline; the
    experiment is completed.
 
@@ -69,8 +67,8 @@ multiplier, not a load-bearing dependency.
 
 ## What is interesting about the engineering
 
-- **Feature-first layout.** Each feature (`audit`, `analytics`, `snippet`,
-  `variants`, `experiments`, `demo`) owns its `components/`, `server/`,
+- **Feature-first layout.** Each feature (`analytics`, `snippet`, `variants`,
+  `experiments`, `demo`) owns its `components/`, `server/`,
   `schemas/`, and `lib/`. Route handlers stay thin.
 - **Strict zod boundaries.** Request bodies, query params, AI outputs, and
   the deploy-time baseline rewrite are all parsed at the edge.
@@ -99,12 +97,8 @@ Be upfront about scope. The shortcuts are deliberate and documented.
   purchase floors. Raw conversion rates and lift remain supporting metrics.
 - The "snippet" is an in-app React provider on the demo page, not a
   third-party `<script>` tag.
-- Audit findings are deterministic heuristics, not an AI summary of the
-  page. Audits run inline against the request.
 - Variant scope is hero copy, primary CTA label, and a small trust-proof
   row. No DOM rewriting or visual editor.
-- Screenshots and extracted signals are stored inline rather than in
-  object storage.
 - Anonymous IDs live in browser local storage; there is no identity graph.
 
 ---
@@ -118,16 +112,12 @@ Roughly ordered by value.
 2. **External snippet SDK.** A small standalone `<script>` so the loop
    works on any site without integrating React.
 3. **Multi-tenant + auth.** Sites, pages, members, API keys, billing.
-4. **Background jobs.** Move audit capture and AI calls off the request
-   path with Inngest, Trigger.dev, or a queue.
-5. **Object storage.** Screenshots and large extracted artifacts in S3/R2,
-   with signed URLs.
-6. **Richer variants.** Iterative generation, side-by-side preview,
+4. **Richer variants.** Iterative generation, side-by-side preview,
    edit-before-approve, structured rollback history.
-7. **Deeper diagnosis.** Session-level paths, segment slicing, and
+5. **Deeper diagnosis.** Session-level paths, segment slicing, and
    AI-assisted hypotheses grounded in real cohorts.
-8. **CMS integrations.** Push approved baselines back into the host CMS.
-9. **Observability.** Structured logs, error tracking, and product
+6. **CMS integrations.** Push approved baselines back into the host CMS.
+7. **Observability.** Structured logs, error tracking, and product
    analytics on StorePilot itself.
 
 ---
@@ -165,23 +155,21 @@ experimentation framework. Multiple concurrent experiments add traffic
 splitting and analysis complexity that would obscure the core story.
 
 **What would you build next if you had a week?**
-Real statistics with sample size guards, an external snippet SDK, and
-moving audit capture and AI calls onto a background job runner. In that
-order.
+Real statistics with sample size guards, an external snippet SDK, and richer
+variant editing. In that order.
 
 ---
 
 ## Suggested live walk
 
 1. Open the repo and skim `README.md` — 30 seconds.
-2. Open `/audit`, paste a real URL, narrate the audit while it runs.
-3. Open `/demo`, click through a session, point at the live event stream
+2. Open `/demo`, click through a session, point at the live event stream
    (or just refresh `/dashboard`).
-4. Show the diagnosis card and explain the rule that produced it.
-5. Generate a variant, point out the zod-validated proposal and the
+3. Show the diagnosis card and explain the rule that produced it.
+4. Generate a variant, point out the zod-validated proposal and the
    deterministic fallback note in the source.
-6. Approve, then show `/experiments` with arm assignments updating.
-7. Force a few conversions across arms, deploy the winner, refresh `/demo`
+5. Approve, then show `/experiments` with arm assignments updating.
+6. Force a few conversions across arms, deploy the winner, refresh `/demo`
    to show the new baseline.
-8. Close on the principle: AI drafts wording, deterministic code owns
+7. Close on the principle: AI drafts wording, deterministic code owns
    truth.

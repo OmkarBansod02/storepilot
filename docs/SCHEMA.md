@@ -10,16 +10,15 @@ StorePilot into a generic analytics or experimentation platform.
 - `pages`: the product page being optimized. Stores the owning storefront, page URL,
   optional title, primary conversion event, and the current persisted baseline
   content used by the demo page.
-- `audits`: a URL audit run for a page. Stores audit status, screenshot URL,
-  extracted page signals, deterministic or AI-assisted findings, and one
-  recommended experiment.
+- `audits`: legacy audit storage retained to avoid a database migration in this
+  demo-focused cleanup. No active route writes to it.
 - `sessions`: an anonymous visitor session for a page. Stores anonymous ID,
   optional experiment context, user agent, referrer, and first/last seen times.
 - `events`: validated snippet events. Stores session, page, event type,
   ecommerce columns where useful, a small typed payload JSON object, and
   occurrence time.
-- `variants`: one generated variant proposal. Stores page, optional source
-  audit, approval status, structured variant content, and rationale. Phase 4
+- `variants`: one generated variant proposal. Stores page, optional legacy
+  audit association, approval status, structured variant content, and rationale. Phase 4
   stores the proposal as one pending approval candidate, not as a generic
   multi-variant framework.
 - `experiments`: one A/B test for a page and variant. Stores status, primary
@@ -29,7 +28,7 @@ StorePilot into a generic analytics or experimentation platform.
 
 ## Enums
 
-- `audit_status`: `queued`, `processing`, `completed`, `failed`
+- `audit_status`: legacy enum retained with the inactive audit table
 - `event_type`: legacy interaction events `page_view`, `scroll_depth`,
   `cta_click`, `form_start`, `form_submit`; ecommerce funnel events
   `product_view`, `add_to_cart`, `checkout_start`, `purchase`
@@ -44,8 +43,7 @@ StorePilot into a generic analytics or experimentation platform.
   one obvious source of truth.
 - Feature request contracts live in `src/features/*/schemas` and use zod at
   route boundaries.
-- JSONB is used for page signals, audit findings, event payloads, and variant
-  content until Phase 1 proves which fields need normalization.
+- JSONB is used for legacy audit data, event payloads, and variant content.
 - No repository layer, service container, workflow engine, or analytics
   framework exists in Phase 0.
 

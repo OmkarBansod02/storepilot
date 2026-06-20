@@ -51,7 +51,7 @@ export function DemoCheckout({ step, onStepChange }: DemoCheckoutProps) {
   return (
     <section
       id="checkout"
-      className="border-t border-border/60 bg-surface-muted"
+      className="border-t border-[#e8ddd0]/60 bg-[#f5efe8]"
     >
       <div className="mx-auto max-w-lg px-6 py-28 text-center">
         <h2 className="text-[28px] font-bold tracking-tight sm:text-[36px]">
@@ -92,7 +92,7 @@ function CheckoutCard({
   onPurchase: () => void;
 }) {
   return (
-    <div className="rounded-xl border border-border/70 bg-card p-6 text-left shadow-card">
+    <div className="rounded-xl border border-[#e8ddd0]/70 bg-white p-6 text-left shadow-card">
       <div className="flex items-center justify-between border-b border-border/60 pb-4">
         <div className="flex items-center gap-3">
           <div className="flex size-10 items-center justify-center rounded-lg bg-accent/50">

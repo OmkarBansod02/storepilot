@@ -7,10 +7,13 @@ export function DemoFeatures() {
   return (
     <section
       id="features"
-      className="border-t border-border/60 bg-surface-muted"
+      className="border-t border-[#e8ddd0]/60 bg-[#f5efe8]"
     >
       <div className="mx-auto max-w-5xl px-6 py-28">
-        <h2 className="text-center text-[28px] font-bold tracking-tight sm:text-[36px]">
+        <p className="text-center text-[11px] font-bold tracking-[0.2em] text-[#6b4c3b] uppercase">
+          Craftsmanship
+        </p>
+        <h2 className="mt-3 text-center text-[28px] font-bold tracking-tight sm:text-[36px]">
           Why customers love this wallet
         </h2>
         <div className="mt-16 grid gap-6 sm:grid-cols-3">
@@ -19,10 +22,10 @@ export function DemoFeatures() {
             return (
               <div
                 key={feature.title}
-                className="rounded-xl border border-border/70 bg-card p-7 text-center shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover"
+                className="rounded-xl border border-[#e8ddd0]/70 bg-white p-7 text-center shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover"
               >
-                <div className="mx-auto flex size-13 items-center justify-center rounded-xl bg-primary/10">
-                  <Icon className="size-6 text-primary" />
+                <div className="mx-auto flex size-13 items-center justify-center rounded-xl bg-[#f5efe8]">
+                  <Icon className="size-6 text-[#8b5e3c]" />
                 </div>
                 <h3 className="mt-6 text-[16px] font-semibold tracking-tight">
                   {feature.title}

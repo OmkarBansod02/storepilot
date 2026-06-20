@@ -9,10 +9,10 @@ import {
 export const demoContent = {
   productName: DEMO_PRODUCT_NAME,
   brand: "Atelier Craft",
-  tagline: "Handcrafted leather goods",
+  tagline: "Small-batch leather goods since 2019",
   headline: "Premium Full-Grain\nLeather Wallet",
   subheadline:
-    "Handmade in small batches from ethically sourced full-grain leather. Designed to age beautifully and last a lifetime.",
+    "Hand-cut and saddle-stitched from vegetable-tanned full-grain leather. Ages beautifully — no two wallets patina the same way.",
   ctaLabel: "Add to Cart",
   secondaryCta: "View Details",
   price: formatDemoCurrency(DEMO_PRODUCT_PRICE_MINOR),
@@ -25,17 +25,17 @@ export const demoContent = {
     {
       title: "Full-grain leather",
       description:
-        "Premium cowhide that develops a rich patina over time, getting more beautiful with every use.",
+        "Vegetable-tanned cowhide sourced from heritage tanneries. Develops a rich patina unique to you.",
     },
     {
-      title: "Handmade craftsmanship",
+      title: "Small-batch atelier",
       description:
-        "Each wallet is hand-cut, hand-stitched, and inspected by artisans in small batches of 50.",
+        "Hand-cut, saddle-stitched, and edge-burnished by artisans. Batches of 50 — never mass-produced.",
     },
     {
       title: "Slim & functional",
       description:
-        "6 card slots, 2 note compartments, and a coin pocket — all in a slim profile that fits any pocket.",
+        "6 card slots, 2 note compartments, and a coin pocket — all in a profile thin enough for any front pocket.",
     },
   ],
   socialProof: {
@@ -48,7 +48,7 @@ export const demoContent = {
         role: "Verified buyer",
       },
       {
-        text: "Finally a wallet that's slim enough for my front pocket but holds everything I need.",
+        text: "Finally a wallet that's slim enough for my front pocket but holds everything I need. Beautifully made.",
         author: "Priya M.",
         role: "Verified buyer",
       },
@@ -56,7 +56,7 @@ export const demoContent = {
   },
   formHeadline: "Complete your order",
   formDescription:
-    "Free shipping on orders above ₹2,000. 30-day hassle-free returns.",
+    "Free shipping on all orders above ₹2,000. 30-day hassle-free returns. Secure checkout.",
   trustBadges: [
     "Free shipping above ₹2,000",
     "30-day returns",

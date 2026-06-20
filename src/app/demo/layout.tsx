@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Atelier Craft - Premium Full-Grain Leather Wallet",
+  title: "Atelier Craft — Premium Full-Grain Leather Wallet",
   description:
-    "Handmade in small batches from ethically sourced full-grain leather. Designed to age beautifully and last a lifetime.",
+    "Hand-cut and saddle-stitched from vegetable-tanned full-grain leather. Small-batch atelier craftsmanship that ages beautifully.",
 };
 
 export default function DemoLayout({

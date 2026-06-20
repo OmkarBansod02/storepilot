@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useTracker } from "@/features/snippet/client/tracker-provider";
 import { Button } from "@/components/ui/button";
 import { demoContent } from "@/features/demo/lib/demo-content";
@@ -54,30 +55,33 @@ export function DemoHero({ content, onAddToCart }: DemoHeroProps) {
     <section className="relative mx-auto max-w-5xl px-6 pb-20 pt-20 sm:pb-28 sm:pt-28">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[500px] bg-[radial-gradient(60%_50%_at_50%_0%,var(--accent)_0%,transparent_70%)] opacity-70"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[500px] bg-[radial-gradient(60%_50%_at_50%_0%,var(--accent)_0%,transparent_70%)] opacity-60"
       />
 
       <div className="grid items-center gap-12 sm:grid-cols-2 sm:gap-16">
-        {/* Product image placeholder */}
+        {/* Product image */}
         <div className="mx-auto w-full max-w-md sm:mx-0">
-          <div className="relative aspect-square overflow-hidden rounded-2xl border border-border/70 bg-gradient-to-br from-accent/60 via-card to-accent/30 shadow-card">
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-              <div className="flex size-20 items-center justify-center rounded-2xl bg-primary/10">
-                <ShoppingCart className="size-10 text-primary/60" />
-              </div>
-              <span className="text-[13px] font-medium text-muted-foreground">
-                Product image
-              </span>
-            </div>
-            <div className="absolute top-4 left-4 rounded-lg bg-primary px-3 py-1 text-[12px] font-bold text-primary-foreground shadow-primary-glow">
+          <div className="relative aspect-square overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-br from-[#f5efe8] via-[#faf7f2] to-[#ede5da] shadow-elevated">
+            <Image
+              src="/leather_wallet.png"
+              alt="Premium Full-Grain Leather Wallet by Atelier Craft"
+              fill
+              className="object-contain p-6"
+              sizes="(max-width: 640px) 90vw, 400px"
+              priority
+            />
+            <div className="absolute top-4 left-4 rounded-lg bg-[#3d2b1f] px-3 py-1 text-[11px] font-bold tracking-wide text-[#f5efe8] uppercase shadow-md">
               Bestseller
+            </div>
+            <div className="absolute bottom-4 right-4 rounded-md bg-white/80 px-2.5 py-1 text-[10px] font-semibold text-[#3d2b1f] backdrop-blur-sm">
+              Small-batch #47
             </div>
           </div>
         </div>
 
         {/* Product details */}
         <div className="text-center sm:text-left">
-          <p className="text-[11px] font-bold tracking-[0.2em] text-primary uppercase">
+          <p className="text-[11px] font-bold tracking-[0.2em] text-[#6b4c3b] uppercase">
             {content.brand}
           </p>
           <h1 className="mt-4 text-[36px] font-extrabold leading-[1.1] tracking-tight whitespace-pre-line text-balance sm:text-[44px]">
@@ -91,7 +95,7 @@ export function DemoHero({ content, onAddToCart }: DemoHeroProps) {
                   key={i}
                   className={`size-4 ${
                     i < Math.floor(demoContent.rating)
-                      ? "fill-primary text-primary"
+                      ? "fill-[#c85a28] text-[#c85a28]"
                       : "fill-border text-border"
                   }`}
                 />
@@ -122,7 +126,7 @@ export function DemoHero({ content, onAddToCart }: DemoHeroProps) {
             <Button
               variant="outline"
               size="lg"
-              className="h-12 px-6 text-base"
+              className="h-12 px-6 text-base border-[#d4c4b0] hover:bg-[#f5efe8]"
               onClick={handleViewDetails}
             >
               {content.secondaryCtaLabel}

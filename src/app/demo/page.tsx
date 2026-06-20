@@ -49,14 +49,19 @@ export default async function DemoPage({ searchParams }: DemoPageProps) {
   ]);
 
   return (
-    <div className="flex min-h-full flex-col">
-      <header className="sticky top-0 z-50 border-b border-border/70 bg-background/90 shadow-[0_1px_3px_rgba(26,22,20,0.03)] backdrop-blur-md supports-[backdrop-filter]:bg-background/80">
+    <div className="flex min-h-full flex-col bg-[#faf7f2]">
+      <header className="sticky top-0 z-50 border-b border-[#e8ddd0]/80 bg-[#faf7f2]/92 shadow-[0_1px_3px_rgba(61,43,31,0.04)] backdrop-blur-md">
         <div className="mx-auto flex h-16 w-full max-w-5xl items-center justify-between px-6">
-          <span className="text-base font-semibold tracking-tight">
-            {baseline.brand}
-          </span>
+          <div className="flex items-center gap-2.5">
+            <div className="flex size-7 items-center justify-center rounded-md bg-[#3d2b1f]">
+              <span className="text-[11px] font-bold text-[#f5efe8]">AC</span>
+            </div>
+            <span className="text-[15px] font-semibold tracking-tight text-[#3d2b1f]">
+              {baseline.brand}
+            </span>
+          </div>
           <nav className="flex items-center gap-4">
-            <Button asChild variant="outline" size="sm">
+            <Button asChild variant="outline" size="sm" className="border-[#d4c4b0] hover:bg-[#f5efe8]">
               <a href="#checkout">
                 <ShoppingBag className="size-4" />
                 Cart
@@ -76,12 +81,12 @@ export default async function DemoPage({ searchParams }: DemoPageProps) {
         />
       </main>
 
-      <footer className="border-t border-border/60 bg-surface-muted/50">
-        <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6 text-[13px] text-muted-foreground">
-          <span>&copy; {baseline.brand}</span>
+      <footer className="border-t border-[#e8ddd0]/80 bg-[#f5efe8]">
+        <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6 text-[13px] text-[#7d6b5d]">
+          <span>&copy; {baseline.brand} &middot; Small-batch leather goods</span>
           <Link
             href="/dashboard"
-            className="font-medium text-primary hover:underline underline-offset-2 transition-colors"
+            className="font-medium text-[#c85a28] hover:underline underline-offset-2 transition-colors"
           >
             View StorePilot Dashboard &rarr;
           </Link>

@@ -4,10 +4,12 @@ import { CheckCircle2, Loader2, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { formatDemoCurrency } from "@/features/demo/lib/demo-product";
 
 interface SimulationResponse {
   visitors: number;
   purchases: number;
+  revenueCents?: number;
   error?: string;
 }
 
@@ -40,8 +42,12 @@ export function SimulateTrafficButton() {
         return;
       }
 
+      const revenueSummary =
+        body.revenueCents !== undefined
+          ? ` · ${formatDemoCurrency(body.revenueCents)} revenue`
+          : "";
       setMessage(
-        `Added ${body.visitors.toLocaleString()} visitors and ${body.purchases.toLocaleString()} purchases.`,
+        `Added ${body.visitors.toLocaleString()} visitors and ${body.purchases.toLocaleString()} purchases${revenueSummary}.`,
       );
       router.refresh();
     } catch {

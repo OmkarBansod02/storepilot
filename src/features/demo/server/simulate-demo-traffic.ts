@@ -35,6 +35,12 @@ interface FunnelRates {
   purchase: number;
 }
 
+interface FunnelQuota {
+  addToCart: number;
+  checkoutStart: number;
+  purchase: number;
+}
+
 type RandomSource = () => number;
 
 interface ArmSummary {
@@ -48,12 +54,31 @@ export interface SimulateDemoTrafficResult {
   visitors: number;
   events: number;
   purchases: number;
+  revenueCents: number;
   experimentId: string | null;
   arms: {
     control: ArmSummary;
     variant: ArmSummary;
   };
 }
+
+/**
+ * Fixed funnel rates per arm. Conversions are applied as deterministic quotas
+ * (not per-visitor coin flips) so a single clean demo run is stable and the
+ * variant reliably and believably outperforms control.
+ */
+const ARM_FUNNEL_RATES: Record<ExperimentArm, FunnelRates> = {
+  control: {
+    addToCart: 0.14,
+    checkoutStart: 0.07,
+    purchase: 0.03,
+  },
+  variant: {
+    addToCart: 0.2,
+    checkoutStart: 0.12,
+    purchase: 0.054,
+  },
+};
 
 function createSeededRandom(seed: number): RandomSource {
   let state = seed >>> 0;
@@ -66,29 +91,49 @@ function createSeededRandom(seed: number): RandomSource {
   };
 }
 
-function randomRate(
-  min: number,
-  max: number,
-  random: RandomSource,
-): number {
-  return min + random() * (max - min);
+/**
+ * Converts fixed funnel rates into exact integer event counts for a given arm
+ * visitor total, keeping the funnel nested (purchase ≤ checkout ≤ add-to-cart).
+ */
+function computeFunnelQuota(
+  armVisitors: number,
+  rates: FunnelRates,
+): FunnelQuota {
+  const addToCart = Math.min(
+    armVisitors,
+    Math.round(armVisitors * rates.addToCart),
+  );
+  const checkoutStart = Math.min(
+    addToCart,
+    Math.round(armVisitors * rates.checkoutStart),
+  );
+  const purchase = Math.min(
+    checkoutStart,
+    Math.round(armVisitors * rates.purchase),
+  );
+
+  return { addToCart, checkoutStart, purchase };
 }
 
-function createFunnelRates(
-  random: RandomSource,
-): Record<ExperimentArm, FunnelRates> {
-  return {
-    control: {
-      addToCart: randomRate(0.13, 0.17, random),
-      checkoutStart: randomRate(0.065, 0.09, random),
-      purchase: randomRate(0.02, 0.026, random),
-    },
-    variant: {
-      addToCart: randomRate(0.18, 0.23, random),
-      checkoutStart: randomRate(0.11, 0.15, random),
-      purchase: randomRate(0.065, 0.075, random),
-    },
-  };
+/**
+ * Splits the visitor pool 50/50 between arms when an experiment is running.
+ * Without an experiment, all traffic is attributed to control.
+ */
+function computeArmVisitorCounts(
+  visitorCount: number,
+  hasExperiment: boolean,
+  firstArm: ExperimentArm,
+): Record<ExperimentArm, number> {
+  if (!hasExperiment) {
+    return { control: visitorCount, variant: 0 };
+  }
+
+  const firstArmCount = Math.ceil(visitorCount / 2);
+  const secondArmCount = visitorCount - firstArmCount;
+
+  return firstArm === "control"
+    ? { control: firstArmCount, variant: secondArmCount }
+    : { control: secondArmCount, variant: firstArmCount };
 }
 
 function emptyArmSummary(): ArmSummary {
@@ -159,8 +204,17 @@ export async function simulateDemoTraffic(
   const random = createSeededRandom(
     SIMULATION_SEED ^ visitorCount ^ (experiment ? 1 : 0),
   );
-  const rates = createFunnelRates(random);
   const firstArm: ExperimentArm = random() < 0.5 ? "control" : "variant";
+  const armVisitorCounts = computeArmVisitorCounts(
+    visitorCount,
+    Boolean(experiment),
+    firstArm,
+  );
+  const quotas: Record<ExperimentArm, FunnelQuota> = {
+    control: computeFunnelQuota(armVisitorCounts.control, ARM_FUNNEL_RATES.control),
+    variant: computeFunnelQuota(armVisitorCounts.variant, ARM_FUNNEL_RATES.variant),
+  };
+  const armSeen: Record<ExperimentArm, number> = { control: 0, variant: 0 };
   const sessionRows: NewSession[] = [];
   const eventRows: NewEvent[] = [];
   const conversionRows: NewConversion[] = [];
@@ -193,11 +247,12 @@ export async function simulateDemoTraffic(
     const firstSeenAt = new Date(
       trafficStartedAt + random() * (now - trafficStartedAt),
     );
-    const funnelPosition = random();
-    const armRates = rates[arm];
-    const addToCart = funnelPosition < armRates.addToCart;
-    const checkoutStart = funnelPosition < armRates.checkoutStart;
-    const purchase = funnelPosition < armRates.purchase;
+    const armPosition = armSeen[arm];
+    armSeen[arm] += 1;
+    const armQuota = quotas[arm];
+    const purchase = armPosition < armQuota.purchase;
+    const checkoutStart = armPosition < armQuota.checkoutStart;
+    const addToCart = armPosition < armQuota.addToCart;
     const finalEventOffset = purchase
       ? 12
       : checkoutStart
@@ -303,10 +358,13 @@ export async function simulateDemoTraffic(
     );
   });
 
+  const totalPurchases = arms.control.purchases + arms.variant.purchases;
+
   return {
     visitors: visitorCount,
     events: eventRows.length,
-    purchases: arms.control.purchases + arms.variant.purchases,
+    purchases: totalPurchases,
+    revenueCents: totalPurchases * DEMO_PRODUCT_PRICE_MINOR,
     experimentId: experiment?.id ?? null,
     arms,
   };

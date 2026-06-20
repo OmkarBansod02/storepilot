@@ -36,6 +36,12 @@ function formatPercent(value: number): string {
   return `${(Math.min(value, 1) * 100).toFixed(1)}%`;
 }
 
+function formatProbabilityBest(value: number): string {
+  const rounded = (Math.min(value, 1) * 100).toFixed(1);
+  if (rounded === "100.0") return ">99.9%";
+  return `${rounded}%`;
+}
+
 function formatSignedPercentagePoints(value: number): string {
   if (value === 0) return "0 pts";
   const sign = value > 0 ? "+" : "";
@@ -123,7 +129,8 @@ function getBayesianCopy(
   if (experiment.recommendedAction === "promote_winner") {
     return {
       label: `${winnerLabel} is likely best`,
-      caption: "The winner has cleared the 95% Bayesian confidence threshold.",
+      caption:
+        "The posterior estimate has cleared the 95% Bayesian confidence threshold.",
     };
   }
 
@@ -262,7 +269,7 @@ export function RunningExperimentCard({
                   promotionReady && !isTerminal && "text-success",
                 )}
               >
-                {formatPercent(bestProbability)}
+                {formatProbabilityBest(bestProbability)}
               </p>
             </div>
             <div>
@@ -302,8 +309,8 @@ export function RunningExperimentCard({
           </div>
 
           <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground/70">
-            Probability uses a Beta(1, 1) prior with 25,000 Monte Carlo
-            samples. Promotion requires both high confidence and minimum
+            Probability is estimated from posterior samples using a Beta(1, 1)
+            prior. Promotion requires both high confidence and minimum
             visitor/purchase thresholds.
           </p>
         </div>
@@ -511,7 +518,7 @@ function ArmCard({
       <div className="mt-3 flex items-center justify-between border-t pt-3 text-xs">
         <span className="text-muted-foreground">Probability best</span>
         <span className="font-semibold tabular-nums">
-          {formatPercent(probabilityBest)}
+          {formatProbabilityBest(probabilityBest)}
         </span>
       </div>
 

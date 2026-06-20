@@ -22,14 +22,14 @@ full-stack execution.
    deterministic heuristics to produce a conversion audit with one recommended
    experiment.
 2. **Observe a demo product page.** A bundled demo product page is wired up to
-   a lightweight in-app tracker. Sessions, page views, scroll depth, CTA
-   clicks, form starts, and form submits are recorded into Postgres.
+   a lightweight in-app tracker. Product views, add-to-cart actions, checkout
+   starts, purchases, revenue, and scroll depth are recorded into Postgres.
 3. **Diagnose the funnel.** A small deterministic rule set turns aggregated
    metrics into one primary bottleneck (e.g. weak above-the-fold interest,
    form friction, low CTA engagement) with supporting signals and a confidence
    level.
 4. **Generate one variant.** Given the current diagnosis and the persisted
-   baseline content, StorePilot drafts one improved hero/CTA proposal. If
+   baseline content, StorePilot drafts one improved product-page proposal. If
    `OPENAI_API_KEY` is configured the draft is AI-generated and validated
    against a strict zod schema; otherwise a deterministic fallback produces a
    validated proposal mapped from the known bottleneck.
@@ -237,7 +237,7 @@ A scripted walkthrough lives in
 1. Run `npm run db:reset-demo` to start from a clean baseline.
 2. Visit `/audit`, paste a public URL, and review the generated audit.
 3. Visit `/demo` in a few browser sessions (incognito works well) and
-   interact: scroll, click the CTA, start and submit the form.
+   interact: view the product, add it to cart, start checkout, and purchase.
 4. Open `/dashboard` to see aggregated metrics and the deterministic
    diagnosis card.
 5. From the dashboard, generate a variant proposal and approve it.

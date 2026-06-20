@@ -2,8 +2,8 @@ export const dynamic = "force-dynamic";
 
 import {
   Activity,
-  DollarSign,
   Eye,
+  IndianRupee,
   Package,
   ShoppingCart,
   TrendingUp,
@@ -25,19 +25,12 @@ import { getRunningExperimentSummary } from "@/features/experiments/server/get-r
 import { VariantSection } from "@/features/variants/components/variant-section";
 import { getLatestPendingVariant } from "@/features/variants/server/get-latest-pending-variant";
 import { serializeVariantProposal } from "@/features/variants/types";
+import { formatDemoCurrency } from "@/features/demo/lib/demo-product";
 
 function formatPercent(value: number): string {
   const boundedValue = Math.min(Math.max(value, 0), 1);
   if (boundedValue === 0) return "0%";
   return `${(boundedValue * 100).toFixed(1)}%`;
-}
-
-function formatCurrency(cents: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 2,
-  }).format(cents / 100);
 }
 
 interface SecondaryStatCardProps {
@@ -132,20 +125,20 @@ export default async function DashboardPage() {
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               <MetricCard
                 title="Total Revenue"
-                value={formatCurrency(metrics.totalRevenueCents)}
+                value={formatDemoCurrency(metrics.totalRevenueCents)}
                 description="Sum of all tracked purchase revenue"
-                icon={DollarSign}
+                icon={IndianRupee}
                 emphasis="primary"
               />
               <MetricCard
                 title="Average Order Value"
-                value={formatCurrency(metrics.averageOrderValueCents)}
+                value={formatDemoCurrency(metrics.averageOrderValueCents)}
                 description="Revenue per purchase"
-                icon={DollarSign}
+                icon={IndianRupee}
               />
               <MetricCard
                 title="Revenue per Visitor"
-                value={formatCurrency(metrics.revenuePerVisitorCents)}
+                value={formatDemoCurrency(metrics.revenuePerVisitorCents)}
                 description="Total revenue divided by sessions"
                 icon={TrendingUp}
               />

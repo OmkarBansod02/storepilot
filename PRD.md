@@ -198,11 +198,11 @@ The codebase itself should showcase clean thinking and clean execution.
 
 ### Snippet tracking
 - session initialization
-- page view tracking
+- product view tracking
 - scroll milestone tracking
-- CTA click tracking
-- form start tracking
-- form submit tracking
+- add-to-cart tracking
+- checkout-start tracking
+- purchase and revenue tracking
 
 ### Diagnosis
 - simple metric aggregation
@@ -210,7 +210,7 @@ The codebase itself should showcase clean thinking and clean execution.
 - one recommended experiment
 
 ### Variant generation
-- generate one improved hero/CTA variant
+- generate one improved ecommerce product-page variant
 - preview baseline vs variant
 - human approval
 
@@ -319,9 +319,10 @@ The system must:
 ## 3. Dashboard
 The system must display:
 - total sessions
-- CTA click-through behavior
-- form start rate
-- form completion rate
+- add-to-cart rate
+- checkout-start rate
+- purchase conversion rate
+- revenue per visitor
 - scroll depth summary
 - top diagnosis
 - recommended experiment
@@ -383,11 +384,11 @@ The codebase should:
 - section hints
 
 ### Snippet events
-- page view
+- product view
 - scroll milestone
-- CTA click
-- form start
-- form submit
+- add to cart
+- checkout start
+- purchase
 
 ### Experiment data
 - experiment status

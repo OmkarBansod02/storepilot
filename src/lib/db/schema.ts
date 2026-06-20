@@ -62,7 +62,12 @@ export interface VariantContent {
   subheadline: string;
   primaryCtaLabel: string;
   trustProofRow: string[];
-  targetArea: "hero" | "primary_cta" | "trust_proof" | "signup_form";
+  targetArea:
+    | "hero_positioning"
+    | "add_to_cart_cta"
+    | "checkout_reassurance"
+    | "shipping_returns_trust"
+    | "offer_banner";
   expectedImpact: string;
   sourceDiagnosis: {
     primaryBottleneck:

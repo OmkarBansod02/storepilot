@@ -277,7 +277,7 @@ function buildRecommendedExperiment(
       title: "Test a clearer primary CTA path",
       hypothesis:
         "Making one action visually and verbally dominant will reduce hesitation and increase click-through from the first screen.",
-      expectedImpact: "+10-18% CTA clicks",
+      expectedImpact: "+10-18% add-to-cart engagement",
       changes: [
         "Use one primary CTA label that describes the next step",
         "Repeat that CTA near the hero and after the main proof section",

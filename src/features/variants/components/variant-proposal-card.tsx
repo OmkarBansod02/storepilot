@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { BaselineVsVariant } from "@/features/variants/components/baseline-vs-variant";
 import type { DemoPageBaseline, SerializedVariantProposal } from "@/features/variants/types";
+import { formatVariantTargetArea } from "@/features/variants/lib/format-variant-target-area";
 
 export interface ApprovalResult {
   variant: SerializedVariantProposal;
@@ -18,12 +19,6 @@ interface VariantProposalCardProps {
   variant: SerializedVariantProposal;
   baseline: DemoPageBaseline;
   onApproved: (result: ApprovalResult) => void;
-}
-
-function formatTargetArea(area: string): string {
-  if (area === "signup_form") return "Offer form";
-
-  return area.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 function StatusBadge({ status }: { status: string }) {
@@ -100,7 +95,7 @@ export function VariantProposalCard({
                 Variant Proposal
               </p>
               <h2 className="mt-1 text-lg font-semibold leading-snug">
-                Improved {formatTargetArea(variant.targetArea)}
+                Improved {formatVariantTargetArea(variant.targetArea)}
               </h2>
             </div>
           </div>
@@ -108,7 +103,10 @@ export function VariantProposalCard({
         </div>
 
         <div className="mt-5 grid gap-4 rounded-lg border bg-muted/40 p-4 sm:grid-cols-3">
-          <MetaCell label="Target area" value={formatTargetArea(variant.targetArea)} />
+          <MetaCell
+            label="Target area"
+            value={formatVariantTargetArea(variant.targetArea)}
+          />
           <MetaCell label="Expected impact" value={variant.expectedImpact} />
           <MetaCell
             label="Source"

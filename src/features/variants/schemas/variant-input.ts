@@ -1,10 +1,11 @@
 import { z } from "zod";
 
 export const variantTargetAreaSchema = z.enum([
-  "hero",
-  "primary_cta",
-  "trust_proof",
-  "signup_form",
+  "hero_positioning",
+  "add_to_cart_cta",
+  "checkout_reassurance",
+  "shipping_returns_trust",
+  "offer_banner",
 ]);
 
 export const variantGenerationSourceSchema = z.enum([

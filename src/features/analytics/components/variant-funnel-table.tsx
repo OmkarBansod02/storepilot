@@ -8,19 +8,12 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import type { VariantFunnelMetrics } from "@/features/analytics/types";
+import { formatDemoCurrency } from "@/features/demo/lib/demo-product";
 
 function formatPercent(value: number): string {
   const bounded = Math.min(Math.max(value, 0), 1);
   if (bounded === 0) return "0%";
   return `${(bounded * 100).toFixed(1)}%`;
-}
-
-function formatCurrency(cents: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 2,
-  }).format(cents / 100);
 }
 
 function armLabel(arm: VariantFunnelMetrics["arm"]): string {
@@ -107,7 +100,7 @@ export function VariantFunnelTable({
                       {formatPercent(row.purchaseConversionRate)}
                     </td>
                     <td className="py-3 pr-4 text-right tabular-nums">
-                      {formatCurrency(row.totalRevenueCents)}
+                      {formatDemoCurrency(row.totalRevenueCents)}
                     </td>
                     <td
                       className={cn(
@@ -115,7 +108,7 @@ export function VariantFunnelTable({
                         isBest && "font-semibold text-success",
                       )}
                     >
-                      {formatCurrency(row.revenuePerVisitorCents)}
+                      {formatDemoCurrency(row.revenuePerVisitorCents)}
                     </td>
                   </tr>
                 );

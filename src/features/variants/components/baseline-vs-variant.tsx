@@ -62,7 +62,7 @@ export function BaselineVsVariant({ baseline, variant }: BaselineVsVariantProps)
           variantValue={variant.subheadline}
         />
         <ComparisonRow
-          label="CTA Label"
+          label="Add-to-cart label"
           baselineValue={baseline.primaryCtaLabel}
           variantValue={variant.primaryCtaLabel}
         />

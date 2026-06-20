@@ -26,9 +26,9 @@ export function generateFallbackVariant(params: {
   switch (diagnosis.primaryBottleneck) {
     case "form_friction":
       return {
-        headline: "A faster path from product interest to checkout",
-        subheadline: `${baseline.brand} helps shoppers understand the product, trust the offer, and finish the purchase step without extra hesitation.`,
-        primaryCtaLabel: "Claim the offer",
+        headline: "Complete your order with confidence",
+        subheadline: `${baseline.brand} pairs secure checkout with clear shipping and returns, so buying your leather wallet feels straightforward.`,
+        primaryCtaLabel: "Complete secure purchase",
         trustProofRow: [
           "Secure checkout",
           "Easy returns",
@@ -36,7 +36,7 @@ export function generateFallbackVariant(params: {
         ],
         rationale:
           "The diagnosis shows shoppers are starting checkout but not completing purchase. This proposal keeps the product promise focused on purchase intent and adds reassurance around effort and commitment before the conversion step.",
-        targetArea: "signup_form",
+        targetArea: "checkout_reassurance",
         expectedImpact,
         sourceDiagnosis,
         source: "deterministic_fallback",
@@ -44,17 +44,17 @@ export function generateFallbackVariant(params: {
 
     case "weak_above_the_fold_interest":
       return {
-        headline: "Find the pack shoppers choose for every quick escape",
-        subheadline: `${baseline.brand} gives shoppers a clearer reason to compare, trust, and buy the product without digging through the page.`,
-        primaryCtaLabel: "Shop the pack",
+        headline: "A full-grain leather wallet built to age beautifully",
+        subheadline: `${baseline.brand} handcrafts a slim everyday wallet with durable leather, practical storage, and a lifetime of character.`,
+        primaryCtaLabel: "Add to cart",
         trustProofRow: [
           "Fast shipping",
           "Verified buyer proof",
           baseline.trustProofRow[0],
         ],
         rationale:
-          "The diagnosis points to weak above-the-fold engagement. This proposal makes the hero promise more specific, ties the product to a measurable outcome, and gives the primary CTA a clearer reason to click.",
-        targetArea: "hero",
+          "The diagnosis points to weak above-the-fold engagement. This proposal makes the product promise more specific and gives shoppers a clearer reason to add the wallet to cart.",
+        targetArea: "hero_positioning",
         expectedImpact,
         sourceDiagnosis,
         source: "deterministic_fallback",
@@ -62,8 +62,8 @@ export function generateFallbackVariant(params: {
 
     case "low_cta_engagement":
       return {
-        headline: "Make the next trip easier to pack for",
-        subheadline: `${baseline.brand} gives shoppers a clear product promise, practical proof, and a more direct path from interest to purchase.`,
+        headline: "Carry less. Keep what matters.",
+        subheadline: `${baseline.brand} makes a slim full-grain leather wallet with room for daily essentials and no unnecessary bulk.`,
         primaryCtaLabel: "Add to cart",
         trustProofRow: [
           "Clear next step",
@@ -71,8 +71,8 @@ export function generateFallbackVariant(params: {
           baseline.trustProofRow[0],
         ],
         rationale:
-          "The diagnosis shows low CTA engagement, so the proposal strengthens the action language and makes the next step feel more concrete and outcome-oriented.",
-        targetArea: "primary_cta",
+          "The diagnosis shows low add-to-cart engagement, so the proposal strengthens the button language and makes the next step feel more concrete.",
+        targetArea: "add_to_cart_cta",
         expectedImpact,
         sourceDiagnosis,
         source: "deterministic_fallback",
@@ -80,17 +80,17 @@ export function generateFallbackVariant(params: {
 
     case "good_interest_weak_conversion":
       return {
-        headline: "Turn product interest into a confident order",
-        subheadline: `${baseline.brand} pairs practical product benefits with buyer proof, so engaged shoppers understand the next step and feel ready to convert.`,
+        headline: "Crafted for years of use, backed by easy returns",
+        subheadline: `${baseline.brand} combines full-grain leather, verified buyer proof, free shipping, and 30-day returns for a lower-risk purchase.`,
         primaryCtaLabel: "Buy with confidence",
         trustProofRow: [
           baseline.trustProofRow[0],
-          "Real behavior signals",
-          "One focused next step",
+          "30-day hassle-free returns",
+          "Secure checkout",
         ],
         rationale:
-          "The diagnosis shows visitors are engaging but not converting enough. This proposal connects proof, behavior insight, and the CTA path more tightly so interested readers have fewer reasons to pause.",
-        targetArea: "trust_proof",
+          "The diagnosis shows shoppers are engaging but not purchasing enough. This proposal connects buyer proof, shipping, returns, and the purchase path so interested shoppers have fewer reasons to pause.",
+        targetArea: "shipping_returns_trust",
         expectedImpact,
         sourceDiagnosis,
         source: "deterministic_fallback",
@@ -98,17 +98,17 @@ export function generateFallbackVariant(params: {
 
     case "healthy_funnel":
       return {
-        headline: "A sharper product page for the next lift",
-        subheadline: `${baseline.brand} keeps the core offer intact while making the product promise, proof, and CTA easier for shoppers to act on.`,
-        primaryCtaLabel: "Shop now",
+        headline: "Handcrafted full-grain leather, delivered free",
+        subheadline: `${baseline.brand} makes a slim everyday wallet designed to age beautifully, with free shipping on this order.`,
+        primaryCtaLabel: "Add to cart",
         trustProofRow: [
           baseline.trustProofRow[0],
-          "Buyer-ready proof",
-          "Focused checkout path",
+          "Free shipping above ₹2,000",
+          "30-day hassle-free returns",
         ],
         rationale:
-          "The diagnosis does not show a major repair need, so this proposal keeps the existing offer intact while sharpening the value proposition and CTA for incremental lift.",
-        targetArea: "hero",
+          "The diagnosis does not show a major repair need, so this proposal keeps the existing product intact while testing a clearer shipping offer for incremental lift.",
+        targetArea: "offer_banner",
         expectedImpact,
         sourceDiagnosis,
         source: "deterministic_fallback",
@@ -122,7 +122,7 @@ export function generateFallbackVariant(params: {
         trustProofRow: baseline.trustProofRow,
         rationale:
           "The diagnosis does not have enough behavior data for a confident variant. The backend normally blocks generation before this fallback is used.",
-        targetArea: "hero",
+        targetArea: "hero_positioning",
         expectedImpact,
         sourceDiagnosis,
         source: "deterministic_fallback",

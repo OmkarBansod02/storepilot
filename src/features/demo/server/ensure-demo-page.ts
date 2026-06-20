@@ -2,10 +2,11 @@ import { db } from "@/lib/db";
 import { sites, pages } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { getDefaultDemoPageBaseline } from "@/features/demo/lib/default-demo-page-baseline";
+import { DEMO_PRODUCT_NAME } from "@/features/demo/lib/demo-product";
 
 const DEMO_SITE_NAME = "StorePilot Demo";
 const DEMO_SITE_URL = "http://localhost:3000/demo";
-const DEMO_PAGE_TITLE = "Northstar Pack - Demo Product Page";
+const DEMO_PAGE_TITLE = `${DEMO_PRODUCT_NAME} - Demo Product Page`;
 const DEMO_PRIMARY_CONVERSION_EVENT = "purchase";
 
 export async function ensureDemoPage(): Promise<{ pageId: string; siteId: string }> {
@@ -38,6 +39,7 @@ export async function ensureDemoPage(): Promise<{ pageId: string; siteId: string
     await db
       .update(pages)
       .set({
+        title: DEMO_PAGE_TITLE,
         baselineContent: existingPage[0].baselineContent
           ? existingPage[0].baselineContent
           : baselineContent,

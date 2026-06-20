@@ -1,4 +1,13 @@
+import {
+  DEMO_CURRENCY,
+  DEMO_PRODUCT_ID,
+  DEMO_PRODUCT_NAME,
+  DEMO_PRODUCT_PRICE_MINOR,
+  formatDemoCurrency,
+} from "@/features/demo/lib/demo-product";
+
 export const demoContent = {
+  productName: DEMO_PRODUCT_NAME,
   brand: "Atelier Craft",
   tagline: "Handcrafted leather goods",
   headline: "Premium Full-Grain\nLeather Wallet",
@@ -6,10 +15,10 @@ export const demoContent = {
     "Handmade in small batches from ethically sourced full-grain leather. Designed to age beautifully and last a lifetime.",
   ctaLabel: "Add to Cart",
   secondaryCta: "View Details",
-  price: "₹2,499",
-  priceCents: 249900,
-  currency: "INR",
-  productId: "premium-leather-wallet",
+  price: formatDemoCurrency(DEMO_PRODUCT_PRICE_MINOR),
+  priceCents: DEMO_PRODUCT_PRICE_MINOR,
+  currency: DEMO_CURRENCY,
+  productId: DEMO_PRODUCT_ID,
   rating: 4.8,
   reviewCount: 200,
   features: [

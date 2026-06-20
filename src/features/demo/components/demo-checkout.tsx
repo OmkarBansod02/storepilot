@@ -100,7 +100,7 @@ function CheckoutCard({
           </div>
           <div>
             <p className="text-[14px] font-semibold">
-              Premium Full-Grain Leather Wallet
+              {demoContent.productName}
             </p>
             <p className="text-[12.5px] text-muted-foreground">Qty: 1</p>
           </div>

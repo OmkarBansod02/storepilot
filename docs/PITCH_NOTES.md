@@ -33,9 +33,9 @@ product. Frame it as evidence of product and engineering judgment.
 
 1. **Audit a URL.** Playwright renders the page, deterministic heuristics
    produce a structured audit with findings and one recommended experiment.
-2. **Observe a demo product page.** An in-app tracker records sessions,
-   page views, scroll depth milestones, CTA clicks, form starts, and form
-   submits into Postgres.
+2. **Observe a demo product page.** An in-app tracker records product views,
+   add-to-cart actions, checkout starts, purchases, revenue, and scroll depth
+   into Postgres.
 3. **Diagnose.** A small deterministic rule set turns aggregated metrics
    into one primary bottleneck with supporting signals and a confidence
    level.

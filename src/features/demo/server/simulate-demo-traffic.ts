@@ -12,10 +12,12 @@ import type { SimulateTrafficInput } from "@/features/demo/schemas/simulate-traf
 import { ensureDemoPage } from "@/features/demo/server/ensure-demo-page";
 import { getRunningExperimentForPage } from "@/features/experiments/server/get-running-experiment";
 import type { ExperimentArm } from "@/features/experiments/types";
+import {
+  DEMO_CURRENCY,
+  DEMO_PRODUCT_ID,
+  DEMO_PRODUCT_PRICE_MINOR,
+} from "@/features/demo/lib/demo-product";
 
-const DEMO_PRODUCT_ID = "premium-leather-wallet";
-const PRODUCT_VALUE_CENTS = 249_900;
-const DEMO_CURRENCY = "INR";
 const MAX_VISITORS = 5_000;
 const INSERT_BATCH_SIZE = 500;
 const TRAFFIC_WINDOW_MS = 14 * 24 * 60 * 60 * 1_000;
@@ -105,8 +107,8 @@ function createEvent(
   const isPurchase = eventType === "purchase";
   const payload = {
     product_id: DEMO_PRODUCT_ID,
-    ...(hasCartValue ? { cart_value_cents: PRODUCT_VALUE_CENTS } : {}),
-    ...(isPurchase ? { revenue_cents: PRODUCT_VALUE_CENTS } : {}),
+    ...(hasCartValue ? { cart_value_cents: DEMO_PRODUCT_PRICE_MINOR } : {}),
+    ...(isPurchase ? { revenue_cents: DEMO_PRODUCT_PRICE_MINOR } : {}),
     ...(eventType !== "product_view" ? { currency: DEMO_CURRENCY } : {}),
     ...(experimentId && arm ? { experimentId, variantArm: arm } : {}),
     ...(variantId ? { variant_id: variantId } : {}),
@@ -119,8 +121,8 @@ function createEvent(
     eventType,
     productId: DEMO_PRODUCT_ID,
     variantId,
-    revenueCents: isPurchase ? PRODUCT_VALUE_CENTS : null,
-    cartValueCents: hasCartValue ? PRODUCT_VALUE_CENTS : null,
+    revenueCents: isPurchase ? DEMO_PRODUCT_PRICE_MINOR : null,
+    cartValueCents: hasCartValue ? DEMO_PRODUCT_PRICE_MINOR : null,
     currency: eventType === "product_view" ? null : DEMO_CURRENCY,
     payload,
     occurredAt,

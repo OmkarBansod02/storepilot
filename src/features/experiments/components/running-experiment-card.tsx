@@ -14,6 +14,8 @@ import {
 import type { RunningExperimentSummary } from "@/features/experiments/server/get-running-experiment-summary";
 import type { VariantFunnelMetrics } from "@/features/analytics/types";
 import { cn } from "@/lib/utils";
+import { formatDemoCurrency } from "@/features/demo/lib/demo-product";
+import { formatVariantTargetArea } from "@/features/variants/lib/format-variant-target-area";
 
 export type LabStatus = "RUNNING" | "WINNER" | "PROMOTED" | "KILLED";
 
@@ -61,21 +63,10 @@ function formatDate(value: Date | null): string {
   }).format(value);
 }
 
-function formatCurrency(cents: number): string {
-  return `₹${(cents / 100).toFixed(2)}`;
-}
-
-function formatExperimentName(targetArea: string): string {
-  const names: Record<string, string> = {
-    hero: "Premium leather wallet hero test",
-    primary_cta: "Add-to-cart CTA test",
-    trust_proof: "Trust proof placement test",
-    signup_form: "Offer form test",
-  };
-  return (
-    names[targetArea] ??
-    `${targetArea.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())} test`
-  );
+function formatExperimentName(
+  targetArea: RunningExperimentSummary["variantTargetArea"],
+): string {
+  return `${formatVariantTargetArea(targetArea)} test`;
 }
 
 export function getLabStatus(experiment: RunningExperimentSummary): LabStatus {
@@ -117,7 +108,7 @@ function getWinnerCopy(
   }
   if (winner === "variant") {
     return {
-      label: "Craftsmanship variant leading",
+      label: "Product-page variant leading",
       caption:
         "The variant is outperforming the baseline on purchase conversion.",
     };
@@ -219,7 +210,7 @@ export function RunningExperimentCard({
             <p className="text-[13.5px] text-muted-foreground">
               {experiment.variantHeadline}
               <span className="mx-2 text-border">·</span>
-              CTA: {experiment.variantCtaLabel}
+              Add-to-cart label: {experiment.variantCtaLabel}
             </p>
           </div>
           <Badge variant={statusConfig.variant}>{statusConfig.label}</Badge>
@@ -241,7 +232,7 @@ export function RunningExperimentCard({
             />
             <MetricPill
               label="Rev / visitor"
-              value={formatCurrency(aggregateRevenuePerVisitor!)}
+              value={formatDemoCurrency(aggregateRevenuePerVisitor!)}
             />
           </div>
         )}
@@ -562,7 +553,7 @@ function ArmCard({
                 Rev / visitor
               </p>
               <p className="mt-0.5 text-sm font-semibold tabular-nums">
-                {formatCurrency(revenuePerVisitorCents)}
+                {formatDemoCurrency(revenuePerVisitorCents)}
               </p>
             </div>
           )}

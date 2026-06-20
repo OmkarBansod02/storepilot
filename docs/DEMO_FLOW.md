@@ -75,8 +75,8 @@ bundled instrumented product page at `/demo`.
 6. Open `http://localhost:3000/demo` in an incognito window and repeat. In
    development you can also reuse the same window and append
    `?freshSession=1` to force a new anonymous ID.
-7. Repeat a few more times. Aim for at least ten sessions, with at least
-   five completing the form and a few that bounce earlier.
+7. Repeat a few more times. Aim for at least ten sessions, with several
+   purchases and a few shoppers dropping out earlier in the funnel.
 
 What happens behind the scenes:
 
@@ -85,9 +85,9 @@ What happens behind the scenes:
 - An anonymous ID is read from (or written to) local storage.
 - `POST /api/sessions` upserts a session row in Postgres tied to the demo
   page.
-- Page views, scroll depth milestones (`25 / 50 / 75 / 100`), CTA clicks,
-  form starts, and form submits are sent to `POST /api/events`, validated
-  by zod, and stored in `events` with a typed payload.
+- Product views, add-to-cart actions, checkout starts, purchases, and scroll
+  depth milestones (`25 / 50 / 75 / 100`) are sent to `POST /api/events`,
+  validated by zod, and stored in `events` with a typed payload.
 
 ---
 
@@ -97,9 +97,9 @@ What happens behind the scenes:
 
 What you should see:
 
-- Total sessions and total page views.
-- Unique-session CTA click-through rate, form start rate, and form submit
-  rate.
+- Total sessions and product views.
+- Unique-session add-to-cart, checkout-start, and purchase-conversion rates.
+- Total revenue, average order value, and revenue per visitor in INR.
 - A scroll depth summary (average max depth, highest depth reached,
   sessions with any scroll event).
 - A diagnosis card with one **primary bottleneck**, supporting signals, a
@@ -112,11 +112,11 @@ sessions and events:
   `features/analytics/server/get-dashboard-metrics.ts`.
 - The diagnosis rule set lives in
   `features/analytics/lib/diagnose-dashboard-metrics.ts`. Examples:
-  - Fewer than 5 sessions or fewer than 10 page views → `not_enough_data`.
-  - Healthy form starts but weak submits → `form_friction`.
-  - Low scroll depth + low CTA click-through → `weak_above_the_fold_interest`.
-  - Low CTA click-through alone → `low_cta_engagement`.
-  - Good scroll depth but weak submits → `good_interest_weak_conversion`.
+  - Fewer than 5 sessions or fewer than 10 product views → `not_enough_data`.
+  - Healthy checkout starts but weak purchases → `form_friction`.
+  - Low scroll depth + low add-to-cart rate → `weak_above_the_fold_interest`.
+  - Low add-to-cart rate alone → `low_cta_engagement`.
+  - Good scroll depth but weak purchases → `good_interest_weak_conversion`.
   - Otherwise → `healthy_funnel`.
 
 If the dashboard says `not_enough_data`, drive more sessions through

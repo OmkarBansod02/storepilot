@@ -46,7 +46,6 @@ export function DemoHero({ content, onAddToCart }: DemoHeroProps) {
   }
 
   function handleViewDetails() {
-    track("cta_click", { label: content.secondaryCtaLabel, location: "hero" });
     const el = document.getElementById("features");
     el?.scrollIntoView({ behavior: "smooth" });
   }

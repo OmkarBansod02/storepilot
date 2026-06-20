@@ -70,8 +70,9 @@ Supported event payloads:
   `{ "product_id"?: string, "revenue_cents"?: number, "revenue"?: number, "currency"?: string, "variant_id"?: UUID }`
 
 `purchase` requires either `revenue_cents` or `revenue`. The server normalizes
-`revenue` to cents for aggregation. Currency defaults to `USD` for ecommerce
-events that include cart value or revenue.
+`revenue` to the smallest currency unit for aggregation. The StorePilot demo
+uses `INR`, so `revenue_cents` and `cart_value_cents` contain paise; for
+example, ₹2,499 is stored as `249900`.
 
 Commerce fields are duplicated into event columns for simple deterministic
 aggregation:
@@ -175,8 +176,8 @@ always starts with:
 - `content.subheadline`
 - `content.primaryCtaLabel`
 - `content.trustProofRow`: 1 to 4 proof snippets
-- `content.targetArea`: `hero`, `primary_cta`, `trust_proof`, or
-  `signup_form`
+- `content.targetArea`: `hero_positioning`, `add_to_cart_cta`,
+  `checkout_reassurance`, `shipping_returns_trust`, or `offer_banner`
 - `content.expectedImpact`
 - `content.sourceDiagnosis.primaryBottleneck`
 - `content.sourceDiagnosis.title`

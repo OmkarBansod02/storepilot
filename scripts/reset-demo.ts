@@ -4,35 +4,23 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import postgres from "postgres";
 
+const demoProductModulePath = "../src/features/demo/lib/demo-product.ts";
+const {
+  DEMO_CURRENCY,
+  DEMO_PRODUCT_ID,
+  DEMO_PRODUCT_NAME,
+  DEMO_PRODUCT_PRICE_MINOR,
+} = (await import(demoProductModulePath)) as {
+  DEMO_CURRENCY: "INR";
+  DEMO_PRODUCT_ID: "premium-leather-wallet";
+  DEMO_PRODUCT_NAME: "Premium leather wallet";
+  DEMO_PRODUCT_PRICE_MINOR: 249_900;
+};
+
 const DEMO_SITE_NAME = "StorePilot Demo";
 const DEMO_SITE_URL = "http://localhost:3000/demo";
-const DEMO_PAGE_TITLE = "Northstar Pack - Demo Product Page";
+const DEMO_PAGE_TITLE = `${DEMO_PRODUCT_NAME} - Demo Product Page`;
 const PRIMARY_CONVERSION_EVENT = "purchase";
-const DEMO_PRODUCT_ID = "northstar-pack";
-const DEMO_CURRENCY = "USD";
-
-interface DemoContent {
-  brand: string;
-  headline: string;
-  subheadline: string;
-  ctaLabel: string;
-  secondaryCta: string;
-  socialProof: {
-    metric: string;
-    metricLabel: string;
-    quotes: [
-      { text: string },
-      { text: string },
-      ...Array<{ text: string }>,
-    ];
-  };
-  formHeadline: string;
-  formDescription: string;
-}
-
-interface DemoContentModule {
-  demoContent: DemoContent;
-}
 
 interface DemoPageBaseline {
   brand: string;
@@ -200,23 +188,22 @@ async function assertSchemaReady(sql: postgres.Sql): Promise<void> {
   }
 }
 
-async function getDefaultDemoPageBaseline(): Promise<DemoPageBaseline> {
-  const modulePath = "../src/features/demo/lib/demo-content.ts";
-  const { demoContent } = (await import(modulePath)) as DemoContentModule;
-
+function getDefaultDemoPageBaseline(): DemoPageBaseline {
   return {
-    brand: demoContent.brand,
-    headline: demoContent.headline.replace(/\s+/g, " ").trim(),
-    subheadline: demoContent.subheadline,
-    primaryCtaLabel: demoContent.ctaLabel,
-    secondaryCtaLabel: demoContent.secondaryCta,
+    brand: "Atelier Craft",
+    headline: "Premium Full-Grain Leather Wallet",
+    subheadline:
+      "Handmade in small batches from ethically sourced full-grain leather. Designed to age beautifully and last a lifetime.",
+    primaryCtaLabel: "Add to Cart",
+    secondaryCtaLabel: "View Details",
     trustProofRow: [
-      `${demoContent.socialProof.metric} ${demoContent.socialProof.metricLabel}`,
-      demoContent.socialProof.quotes[0].text,
-      demoContent.socialProof.quotes[1].text,
+      "Free shipping above ₹2,000",
+      "30-day returns",
+      "Secure checkout",
     ],
-    formHeadline: demoContent.formHeadline,
-    formDescription: demoContent.formDescription,
+    formHeadline: "Complete your order",
+    formDescription:
+      "Free shipping on orders above ₹2,000. 30-day hassle-free returns.",
   };
 }
 
@@ -363,7 +350,7 @@ function buildSeededVariantContent(): Record<string, postgres.JSONValue> {
       "30-day hassle-free returns",
       "4.8/5 from verified buyers",
     ],
-    targetArea: "hero",
+    targetArea: "hero_positioning",
     expectedImpact:
       "Tests whether craftsmanship-focused copy improves purchase conversion on the product page.",
     sourceDiagnosis: {
@@ -376,8 +363,34 @@ function buildSeededVariantContent(): Record<string, postgres.JSONValue> {
 }
 
 function buildSeedSessionPlans(): SeedSessionPlan[] {
-  const controlRevenue = [8900, null, null, null, null, null, null, null, null, null, null, null];
-  const variantRevenue = [8900, 10900, 12900, 8900, null, null, null, null, null, null, null, null];
+  const controlRevenue = [
+    DEMO_PRODUCT_PRICE_MINOR,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+  ];
+  const variantRevenue = [
+    DEMO_PRODUCT_PRICE_MINOR,
+    DEMO_PRODUCT_PRICE_MINOR,
+    DEMO_PRODUCT_PRICE_MINOR,
+    DEMO_PRODUCT_PRICE_MINOR,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+  ];
 
   return [
     ...controlRevenue.map((revenue, index): SeedSessionPlan => ({
@@ -563,10 +576,10 @@ async function seedDemoEcommerceEvents(
           experimentId,
           arm: plan.arm,
           variantId: eventVariantId,
-          extra: { cart_value_cents: 8900 },
+          extra: { cart_value_cents: DEMO_PRODUCT_PRICE_MINOR },
         }),
         variantId: eventVariantId,
-        cartValueCents: 8900,
+        cartValueCents: DEMO_PRODUCT_PRICE_MINOR,
         occurredAt,
       });
       events += 1;
@@ -581,10 +594,14 @@ async function seedDemoEcommerceEvents(
           experimentId,
           arm: plan.arm,
           variantId: eventVariantId,
-          extra: { cart_value_cents: plan.purchaseRevenueCents ?? 8900 },
+          extra: {
+            cart_value_cents:
+              plan.purchaseRevenueCents ?? DEMO_PRODUCT_PRICE_MINOR,
+          },
         }),
         variantId: eventVariantId,
-        cartValueCents: plan.purchaseRevenueCents ?? 8900,
+        cartValueCents:
+          plan.purchaseRevenueCents ?? DEMO_PRODUCT_PRICE_MINOR,
         occurredAt,
       });
       events += 1;

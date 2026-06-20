@@ -6,6 +6,7 @@ import {
 import type { ExperimentStatus } from "@/features/experiments/types";
 import { mapVariantRow } from "@/features/variants/lib/map-variant-row";
 import type { VariantStatus } from "@/features/variants/types";
+import type { VariantTargetArea } from "@/features/variants/schemas/variant-input";
 import { db } from "@/lib/db";
 import { conversions, experiments, sessions, variants } from "@/lib/db/schema";
 import { and, countDistinct, desc, eq } from "drizzle-orm";
@@ -18,7 +19,7 @@ export interface ExperimentResultSummary extends ExperimentResults {
   primaryConversionEvent: string;
   variantHeadline: string;
   variantCtaLabel: string;
-  variantTargetArea: string;
+  variantTargetArea: VariantTargetArea;
   variantStatus: VariantStatus;
   startedAt: Date | null;
   completedAt: Date | null;

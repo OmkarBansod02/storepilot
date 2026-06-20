@@ -5,6 +5,7 @@ import type {
   DiagnosisSignal,
   RecommendedExperiment,
 } from "@/features/analytics/types";
+import { formatDemoCurrency } from "@/features/demo/lib/demo-product";
 
 const MIN_SESSIONS_FOR_DIAGNOSIS = 5;
 const MIN_PRODUCT_VIEWS_FOR_DIAGNOSIS = 10;
@@ -24,14 +25,6 @@ function formatPercent(rate: number): string {
 function formatDepth(depth: number): string {
   if (depth === 0) return "0%";
   return `${Math.round(depth)}%`;
-}
-
-function formatCurrencyCents(cents: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 2,
-  }).format(cents / 100);
 }
 
 function confidenceForSampleSize(totalSessions: number): DiagnosisConfidence {
@@ -61,7 +54,7 @@ function buildCoreSignals(metrics: DiagnosisMetricInput): DiagnosisSignal[] {
     },
     {
       label: "Revenue per visitor",
-      value: formatCurrencyCents(metrics.revenuePerVisitorCents),
+      value: formatDemoCurrency(metrics.revenuePerVisitorCents),
       description: "Total purchase revenue divided by tracked sessions.",
     },
   ];
@@ -115,7 +108,7 @@ export function diagnoseDashboardMetrics(
       recommendedExperiment: {
         title: "Collect a clean baseline",
         description:
-          "Drive a small amount of traffic through the tracked product page before changing copy, CTA placement, or checkout messaging.",
+          "Drive a small amount of traffic through the tracked product page before changing copy, add-to-cart placement, or checkout messaging.",
         targetArea: "Tracking baseline",
         expectedImpact:
           "More reliable diagnosis before choosing the first experiment.",
@@ -147,7 +140,7 @@ export function diagnoseDashboardMetrics(
       recommendedExperiment: {
         title: "Reduce checkout hesitation",
         description:
-          "Test clearer checkout reassurance, return proof, and lower-risk purchase language near the primary CTA.",
+          "Test clearer checkout reassurance, return proof, and lower-risk purchase language near the buy action.",
         targetArea: "Checkout path",
         expectedImpact:
           "Improve purchase completion from shoppers who already show intent.",
@@ -185,7 +178,7 @@ export function diagnoseDashboardMetrics(
       recommendedExperiment: {
         title: "Sharpen the product promise",
         description:
-          "Test a more specific product promise, clearer outcome, stronger proof, and a more direct add-to-cart CTA near the top of the page.",
+          "Test a more specific product promise, clearer outcome, stronger proof, and a more direct add-to-cart button near the top of the page.",
         targetArea: "Hero section",
         expectedImpact:
           "Increase early shopping intent before visitors decide whether to keep reading.",
@@ -215,13 +208,13 @@ export function diagnoseDashboardMetrics(
       primaryBottleneck: "low_cta_engagement",
       title: "Add-to-cart engagement is low",
       summary:
-        "Shoppers are reaching the page, but the product is not earning enough cart intent. The offer, button copy, price confidence, or CTA visibility may need tightening.",
+        "Shoppers are reaching the page, but the product is not earning enough cart intent. The offer, button copy, price confidence, or add-to-cart visibility may need tightening.",
       confidence,
       recommendedExperiment: {
         title: "Test a clearer add-to-cart path",
         description:
-          "Try more outcome-oriented button copy and make the product CTA easier to find in the hero section.",
-        targetArea: "Primary CTA",
+          "Try more outcome-oriented button copy and make the add-to-cart action easier to find in the hero section.",
+        targetArea: "Add-to-cart action",
         expectedImpact:
           "Increase the share of sessions that move from product interest to cart intent.",
       },
@@ -250,10 +243,10 @@ export function diagnoseDashboardMetrics(
         "Shoppers are engaging with the product page, but that interest is not turning into enough purchases. The next test should connect the product promise more directly to the buy step.",
       confidence,
       recommendedExperiment: {
-        title: "Align proof and CTA with purchase intent",
+        title: "Align proof with purchase intent",
         description:
-          "Test stronger buyer proof, clearer checkout expectations, and CTA copy that reduces uncertainty before purchase.",
-        targetArea: "Mid-page proof and CTA path",
+          "Test stronger buyer proof, clearer checkout expectations, and add-to-cart copy that reduces uncertainty before purchase.",
+        targetArea: "Mid-page proof and purchase path",
         expectedImpact:
           "Convert engaged shoppers who need more confidence before buying.",
       },
@@ -286,8 +279,8 @@ export function diagnoseDashboardMetrics(
     recommendedExperiment: {
       title: "Test a sharper value proposition",
       description:
-        "Run a focused hero or CTA copy test to look for incremental lift without changing the whole page.",
-      targetArea: "Hero and primary CTA",
+        "Run a focused hero or add-to-cart copy test to look for incremental lift without changing the whole page.",
+      targetArea: "Hero and add-to-cart action",
       expectedImpact:
         "Find incremental conversion lift while preserving the current funnel.",
     },

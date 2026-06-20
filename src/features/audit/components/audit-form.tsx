@@ -40,7 +40,7 @@ export function AuditForm({ onSubmit, isLoading, defaultUrl }: AuditFormProps) {
         <Globe className="size-5 shrink-0 text-muted-foreground/70" />
         <Input
           type="text"
-          placeholder="https://yourlanding.com"
+          placeholder="https://yourstore.com/products/wallet"
           value={url}
           onChange={(e) => {
             setUrl(e.target.value);

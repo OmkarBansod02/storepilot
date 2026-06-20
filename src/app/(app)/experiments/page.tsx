@@ -22,7 +22,7 @@ export const dynamic = "force-dynamic";
 
 const FLOW_STEPS = [
   "System diagnoses a conversion bottleneck on the product page",
-  "One improved variant is generated (hero, CTA, offer, trust proof)",
+  "One improved variant is generated (hero, add-to-cart, offer, trust proof)",
   "You review and approve the change",
   "Traffic is split 50/50 — funnel metrics tracked per variant",
   "Winner is promoted or the experiment is killed",
@@ -48,10 +48,10 @@ const LAB_EXPERIMENTS: LabExperiment[] = [
       "Test whether a free-shipping threshold above ₹2,000 increases AOV and purchase rate.",
   },
   {
-    title: "Add-to-cart CTA test",
-    targetArea: "Primary CTA",
+    title: "Add-to-cart button test",
+    targetArea: "Add-to-cart action",
     description:
-      "Test CTA copy and color variants to improve add-to-cart rate.",
+      "Test button copy and color variants to improve add-to-cart rate.",
   },
   {
     title: "Trust proof placement test",

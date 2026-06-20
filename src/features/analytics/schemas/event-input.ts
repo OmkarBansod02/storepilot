@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { DEMO_CURRENCY } from "@/features/demo/lib/demo-product";
 
 export const snippetEventTypeSchema = z.enum([
   "page_view",
@@ -101,7 +102,7 @@ export const addToCartPayloadSchema = z
   .object({
     product_id: trackingTextSchema.optional(),
     cart_value_cents: centsSchema.optional(),
-    currency: currencySchema.default("USD"),
+    currency: currencySchema.default(DEMO_CURRENCY),
     variant_id: z.string().uuid().optional(),
   })
   .strict();
@@ -110,7 +111,7 @@ export const checkoutStartPayloadSchema = z
   .object({
     product_id: trackingTextSchema.optional(),
     cart_value_cents: centsSchema.optional(),
-    currency: currencySchema.default("USD"),
+    currency: currencySchema.default(DEMO_CURRENCY),
     variant_id: z.string().uuid().optional(),
   })
   .strict();
@@ -120,7 +121,7 @@ export const purchasePayloadSchema = z
     product_id: trackingTextSchema.optional(),
     revenue_cents: centsSchema.optional(),
     revenue: revenueSchema.optional(),
-    currency: currencySchema.default("USD"),
+    currency: currencySchema.default(DEMO_CURRENCY),
     variant_id: z.string().uuid().optional(),
   })
   .strict();
@@ -166,13 +167,13 @@ export const recordEventInputSchema = z
     baseEventInputSchema
       .extend({
         eventType: z.literal("add_to_cart"),
-        payload: addToCartPayloadSchema.default({ currency: "USD" }),
+        payload: addToCartPayloadSchema.default({ currency: DEMO_CURRENCY }),
       })
       .strict(),
     baseEventInputSchema
       .extend({
         eventType: z.literal("checkout_start"),
-        payload: checkoutStartPayloadSchema.default({ currency: "USD" }),
+        payload: checkoutStartPayloadSchema.default({ currency: DEMO_CURRENCY }),
       })
       .strict(),
     baseEventInputSchema
